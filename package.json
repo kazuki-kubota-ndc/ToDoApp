@@ -1,6 +1,6 @@
 {
   "name": "react-express",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "engines": {
     "node": "v14.18.0",
@@ -10,5 +10,14 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node backend/index.js",
     "heroku-postbuild": "cd frontend && npm install && npm run build"
+  },
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^11.2.7",
+    "@testing-library/user-event": "^12.8.3",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "4.0.3",
+    "web-vitals": "^1.1.2"
   }
 }
