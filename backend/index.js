@@ -3,6 +3,8 @@ const app = express()
 const path = require('path');
 const port = process.env.PORT || 3001
 
+const db = require('../db/db');
+
 app.use(express.static(path.join(__dirname, '../frontend/build')));
 
 app.get('/', (req, res) => {
@@ -10,7 +12,15 @@ app.get('/', (req, res) => {
 })
 
 app.get("/api", (req, res) => {
-  res.json({ message: "Hello World!" });
+  db.pool.connect((err, client) => {
+    if (err) {
+      console.log(err);
+    } else {
+      client.query('SELECT NAME FROM TO_DO_LIST_DATA', (err, result) => {
+        res.json({ message: result.rows[0].name });
+      });
+    }
+  });
 })
 
 app.get('*', (req, res) => {
