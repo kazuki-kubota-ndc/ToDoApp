@@ -1,6 +1,6 @@
 {
   "name": "react-express",
-  "version": "0.1.1",
+  "version": "2.0.0",
   "private": true,
   "engines": {
     "node": "v14.18.0",
@@ -12,16 +12,22 @@
     "heroku-postbuild": "cd frontend && npm install && npm run build"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.4",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
+    "@types/react-modal": "^3.13.1",
+    "array-move": "^4.0.0",
     "body-parser": "^1.19.0",
     "classnames": "^2.3.1",
     "dotenv": "^10.0.0",
     "pg": "^8.7.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-modal": "^3.14.3",
+    "react-router-dom": "^6.0.0",
     "react-scripts": "4.0.3",
+    "react-smooth-dnd": "^0.11.1",
     "web-vitals": "^1.1.2"
   },
   "devDependencies": {
