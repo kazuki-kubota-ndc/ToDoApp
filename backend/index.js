@@ -47,13 +47,17 @@ app.get("/api", (req, res) => {
 
   /* 検索処理 */
   async function select_all() {
+console.log(apiName+': select_all');
     var err_flg = false;
     var cnt = 0;
     var result;
     const dbm = await getPostgresClient();
+console.log(apiName+': getPostgresClient');
     const sql = 'SELECT NO,NAME,CHECK_FLG,SORT FROM TO_DO_LIST_HED ORDER BY SORT';
     try {
+console.log(apiName+': try');
       result = await dbm.execute(sql, []);
+console.log(apiName+': dbm.execute');
       cnt = result.rowCount;
     } catch (e) {
       console.log('err:'+e.stack);
