@@ -8,6 +8,7 @@ class PostgresManager {
      * @return {Promise<void>}
      */
     async init() {
+console.log('init');
         this.client = await db.pool.connect();
     }
 
@@ -59,6 +60,7 @@ class PostgresManager {
  * @return {Promise<Postgres>}
  */
 const getClient = async () => {
+console.log('getClient');
     const postgres = new PostgresManager();
     await postgres.init();
     return postgres;
