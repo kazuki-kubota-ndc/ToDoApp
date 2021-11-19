@@ -1,5 +1,7 @@
 const db = require('../db/db');
 
+require('dotenv').config();
+
 /* PostgresƒNƒ‰ƒX */
 class PostgresManager {
 
@@ -9,6 +11,10 @@ class PostgresManager {
      */
     async init() {
 console.log('init');
+console.log('host: '+process.env.ENV_HOST);
+console.log('database: '+process.env.ENV_DB);
+console.log('user: '+process.env.ENV_USER);
+console.log('password: '+process.env.ENV_PASS);
         this.client = await db.pool.connect();
     }
 
