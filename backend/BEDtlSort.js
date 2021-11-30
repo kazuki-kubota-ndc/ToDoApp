@@ -42,7 +42,7 @@ exports.upd_dtl_sort = function(req, res) {
       await dbm.release();
       console.log('no: '+no);
       console.log('dtl_no,sort: '+log_message);
-      return_result(err_flg)
+      return_result(err_flg);
     }
   }
 }

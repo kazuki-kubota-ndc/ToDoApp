@@ -11,10 +11,10 @@ import '@fortawesome/fontawesome-free/js/regular';
 import 'bulma/css/bulma.min.css';
 
 /* リスト表示 */
-function Todo({ array, title }) {
+function Todo({ array, listArray, mainArray }) {
 
-  /* リストタイトル */
-  const [listName, setListName] = React.useState('');
+  /* リストNoとタイトル */
+  const [listDatas, setListDatas] = React.useState({});
   /* リストデータ */
   const [items, setItems] = React.useState([]);
   /* 保存ボタンのdisabled */
@@ -25,6 +25,8 @@ function Todo({ array, title }) {
   const [loading, setLoading] = React.useState(false);
   /* ダイアログのテキスト名 */
   const [modalDatas, setModalDatas] = React.useState(new Map());
+  /* メイングループデータ */
+  const [mainDatas, setMainDatas] = React.useState([]);
 
   const history = useHistory();
 
@@ -134,17 +136,23 @@ function Todo({ array, title }) {
 
   /* 戻る */
   const goBack = () => {
-    history.push({ pathname: '/', state: { data: datas }});
+    history.push({ pathname: '/ListMain', state: { data: datas, listData: listDatas, mainData: mainDatas }});
   }
 
   /* 初期表示時の処理 */
   useEffect(() =>{
     /* 戻るの返却用データ(保存実行時のみ書き換える) */
     setDatas(array);
-    /* 画面表示用のデータ */
-    setListName(title);
     setItems(array);
   },[array]);
+
+  useEffect(() =>{
+    setListDatas(listArray);
+  },[listArray]);
+
+  useEffect(() =>{
+    setMainDatas(mainArray);
+  },[mainArray]);
 
   return (
     <div>
@@ -167,7 +175,7 @@ function Todo({ array, title }) {
       <div className="panel">
         {/* ヘッダー */}
         <div className="panel-heading">
-           [{ listName }] 並び順変更
+           [{ listDatas.name }] 並び順変更
         </div>
         {/* ドラッグ＆ドロップ出来るメイン表示 */}
         <MainList
@@ -443,17 +451,19 @@ function Footer({ items, onClickUpd, disabled, onClickBack, isLoading }) {
 /* 初期処理 */
 function HedSort() {
   const location = useLocation();
-  const [title, setTitle] = useState('');
+  const [listArray, setListArray] = useState({});
   const [array, setArray] = useState([{}]);
+  const [mainArray, setMainArray] = useState([{}]);
 
   useEffect(() =>{
-    setTitle(location.state.title);
+    setListArray(location.state.listData);
     setArray(location.state.data);
+    setMainArray(location.state.mainData);
   },[])
 
   return (
       <div className="container is-fluid">
-        <Todo array={ array } title={ title }/>
+        <Todo array={ array } listArray={ listArray } mainArray={ mainArray }/>
       </div>
   );
 }

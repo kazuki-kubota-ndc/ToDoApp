@@ -39,7 +39,7 @@ exports.upd_hed_sort = function(req, res) {
     } finally {
       await dbm.release();
       console.log('no,sort: '+log_message);
-      return_result(err_flg)
+      return_result(err_flg);
     }
   }
 }

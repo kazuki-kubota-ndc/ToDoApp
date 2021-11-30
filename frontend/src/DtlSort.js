@@ -11,8 +11,10 @@ import '@fortawesome/fontawesome-free/js/regular';
 import 'bulma/css/bulma.min.css';
 
 /* リスト表示 */
-function Todo({ array, title, no, motoItems }) {
+function Todo({ array, listArray, title, no, motoItems, mainArray }) {
 
+  /* リストNoとタイトル */
+  const [listDatas, setListDatas] = React.useState({});
   /* 親リストタイトル */
   const [oyaTitle, setOyaTitle] = React.useState('');
   /* 親リストNO */
@@ -27,6 +29,8 @@ function Todo({ array, title, no, motoItems }) {
   const [loading, setLoading] = React.useState(false);
   /* ダイアログのテキスト名 */
   const [modalDatas, setModalDatas] = React.useState(new Map());
+  /* メイングループデータ */
+  const [mainDatas, setMainDatas] = React.useState([]);
 
   const history = useHistory();
 
@@ -148,7 +152,7 @@ function Todo({ array, title, no, motoItems }) {
 
   /* 戻る */
   const goBack = () => {
-    history.push({ pathname: '/', state: { data: datas }});
+    history.push({ pathname: '/ListMain', state: { data: datas, listData: listDatas, mainData: mainDatas }});
   }
 
   /* 初期表示時の処理 */
@@ -159,6 +163,14 @@ function Todo({ array, title, no, motoItems }) {
     setOyaNo(no);
     setItems(array);
   },[array]);
+
+  useEffect(() =>{
+    setListDatas(listArray);
+  },[listArray]);
+
+  useEffect(() =>{
+    setMainDatas(mainArray);
+  },[mainArray]);
 
   return (
     <div>
@@ -454,19 +466,23 @@ function HedSort() {
   const location = useLocation();
   const [title, setTitle] = useState('');
   const [no, setNo] = useState();
+  const [listArray, setListArray] = useState({});
   const [array, setArray] = useState([{}]);
   const [items, setItems] = useState([{}]);
+  const [mainArray, setMainArray] = useState([{}]);
 
   useEffect(() =>{
     setTitle(location.state.title);
     setNo(location.state.no);
     setItems(location.state.items);
     setArray(location.state.data);
+    setListArray(location.state.listData);
+    setMainArray(location.state.mainData);
   },[])
 
   return (
       <div className="container is-fluid">
-        <Todo array={ array } title={ title } no={ no } motoItems={ items }/>
+        <Todo array={ array } listArray={ listArray } title={ title } no={ no } motoItems={ items } mainArray={ mainArray }/>
       </div>
   );
 }
