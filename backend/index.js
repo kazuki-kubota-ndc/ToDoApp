@@ -71,39 +71,6 @@ app.get("/api", (req, res) => {
 });
 
 
-/* プッシュ通知テスト */
-app.post("/push_test", (req, res) => {
-  res.header("Content-Type", "application/json; charset=utf-8");
-  var apiName = '[push_test]';
-  console.log(apiName+': start');
-  push_test(req.body);
-
-  function return_result(flg) {
-    console.log('err: '+flg);
-    console.log(apiName+': end');
-    /* 正常処理：１、エラー：０を返す */
-    if(flg) {
-      res.json({ result: 0 });
-    }else {
-      res.json({ result: 1 });
-    }
-  }
-
-  /* 更新処理 */
-  function push_test(items) {
-    var err_flg = false;
-
-    Promise.all(subscribers.map(subscription => {
-      return webpush.sendNotification(subscription, JSON.stringify(params), {});
-    }))
-      .then(res => console.log(res))
-      .catch(err => console.log('ERROR', err));
-
-
-    return_result(err_flg);
-
-  }
-});
 
 /* -------------------- BEListMain.js -------------------- */
 
