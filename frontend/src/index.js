@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import './index.css';
 import App from './App';
+import UserEdit from './UserEdit';
+import Main from './Main';
 import ListMain from './ListMain';
 import ListEdit from './ListEdit';
 import HedSort from './HedSort';
@@ -14,6 +16,8 @@ ReactDOM.render(
     <BrowserRouter>
       <Switch>
         <Route exact path="/" component={App} />
+        <Route exact path="/UserEdit" component={UserEdit} />
+        <Route exact path="/Main" component={Main} />
         <Route exact path="/ListMain" component={ListMain} />
         <Route exact path="/ListEdit" component={ListEdit} />
         <Route exact path="/HedSort" component={HedSort} />

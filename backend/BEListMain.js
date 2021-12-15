@@ -1,13 +1,13 @@
 const { getPostgresClient } = require('../db/postgresManager');
 
 /* リスト画面初期表示時の処理 */
-exports.init = function(req, res) {
+exports.list_main = function(req, res) {
   res.header("Content-Type", "application/json; charset=utf-8");
-  var apiName = '[init]';
+  var apiName = '[list_main]';
   console.log(apiName+': start');
-  console.log('group_no:'+req.query.group_no+', name:'+req.query.name);
+  console.log('user_id:'+req.query.user_id+', group_no:'+req.query.group_no+', name:'+req.query.name+', color:'+req.query.color);
   /* 検索処理を実行 */
-  select_all([req.query.group_no]);
+  select_all([req.query.group_no, req.query.user_id]);
 
   /* 正常時、検索結果を返す */
   function return_result(flg, data, cnt) {
@@ -23,7 +23,8 @@ exports.init = function(req, res) {
           data: data,
           listData: {
             group_no: req.query.group_no,
-            name: req.query.name
+            name: req.query.name,
+            color: req.query.color
           }
         });
       /* 検索結果0件 */
@@ -32,7 +33,8 @@ exports.init = function(req, res) {
           result: 2 ,
           listData: {
             group_no: req.query.group_no,
-            name: req.query.name
+            name: req.query.name,
+            color: req.query.color
           }
         });
       }
@@ -45,7 +47,7 @@ exports.init = function(req, res) {
     var cnt = 0;
     var result;
     const dbm = await getPostgresClient();
-    const sql = 'SELECT NO,NAME,CHECK_FLG,SORT FROM TO_DO_LIST_HED WHERE GROUP_NO = $1 ORDER BY SORT';
+    const sql = 'SELECT NO,NAME,CHECK_FLG,SORT,TO_CHAR(SHIMEBI, \'yyyy/mm/dd\') AS SHIMEBI,EXTRACT(HOUR FROM SHIMEBI) AS SHIMETIME,EXTRACT(MINUTE FROM SHIMEBI) AS SHIMEMIN FROM TO_DO_LIST_HED WHERE GROUP_NO = $1 AND USER_ID = $2 ORDER BY SORT';
     try {
       result = await dbm.execute(sql, params);
       cnt = result.rowCount;
@@ -65,9 +67,9 @@ exports.delete_hed = function(req, res) {
   res.header("Content-Type", "application/json; charset=utf-8");
   var apiName = '[delete_hed]';
   console.log(apiName+': start');
-  console.log('group_no:'+req.query.group_no+', no:'+req.query.no);
+  console.log('user_id:'+req.query.user_id+', group_no:'+req.query.group_no+', no:'+req.query.no);
   /* deleteを実行 */
-  delete_hed([req.query.group_no, req.query.no]);
+  delete_hed([req.query.group_no, req.query.user_id, req.query.no]);
 
   function return_result(flg, cnt) {
     console.log('err: '+flg);
@@ -90,8 +92,8 @@ exports.delete_hed = function(req, res) {
     var err_flg = false;
     var cnt = 0;
     const dbm = await getPostgresClient();
-    const sql = 'DELETE FROM TO_DO_LIST_HED WHERE GROUP_NO = $1 AND NO = $2';
-    const sql2 = 'DELETE FROM TO_DO_LIST_DTL WHERE GROUP_NO = $1 AND NO = $2';
+    const sql = 'DELETE FROM TO_DO_LIST_HED WHERE GROUP_NO = $1 AND USER_ID = $2 AND NO = $3';
+    const sql2 = 'DELETE FROM TO_DO_LIST_DTL WHERE GROUP_NO = $1 AND USER_ID = $2 AND NO = $3';
     try {
       await dbm.begin();
       const result = await dbm.execute(sql, params);
@@ -115,9 +117,9 @@ exports.update_check = function(req, res) {
   res.header("Content-Type", "application/json; charset=utf-8");
   var apiName = '[update_check]';
   console.log(apiName+': start');
-  console.log('group_no:'+req.query.group_no+', no:'+req.query.no+', check_flg:'+req.query.check_flg);
+  console.log('user_id:'+req.query.user_id+', group_no:'+req.query.group_no+', no:'+req.query.no+', check_flg:'+req.query.check_flg);
   /* updateを実行 */
-  update_check([req.query.group_no, req.query.no, req.query.check_flg]);
+  update_check([req.query.group_no, req.query.user_id, req.query.no, req.query.check_flg]);
 
   function return_result(flg, cnt) {
     console.log('err: '+flg);
@@ -140,7 +142,7 @@ exports.update_check = function(req, res) {
     var err_flg = false;
     var cnt = 0;
     const dbm = await getPostgresClient();
-    const sql = 'UPDATE TO_DO_LIST_HED SET CHECK_FLG = $3 WHERE GROUP_NO = $1 AND NO = $2';
+    const sql = 'UPDATE TO_DO_LIST_HED SET CHECK_FLG = $4 WHERE GROUP_NO = $1 AND USER_ID = $2 AND NO = $3';
     try {
       await dbm.begin();
       const result = await dbm.execute(sql, params);
@@ -162,14 +164,14 @@ exports.update_check = function(req, res) {
 
 }
 
-/* リスト名変更処理 */
+/* リスト編集処理 */
 exports.update_hed_name = function(req, res) {
   res.header("Content-Type", "application/json; charset=utf-8");
   var apiName = '[update_hed_name]';
   console.log(apiName+': start');
-  console.log('group_no:'+req.query.group_no+', no:'+req.query.no+', name:'+req.query.name);
+  console.log('user_id:'+req.query.user_id+', group_no:'+req.query.group_no+', no:'+req.query.no+', name:'+req.query.name+', shimebi:'+req.query.shimebi+', time:'+req.query.shimetime+', min:'+req.query.shimemin);
   /* updateを実行 */
-  update_hed_name([req.query.group_no, req.query.no, req.query.name]);
+  update_hed_name([req.query.group_no, req.query.no, req.query.name, req.query.shimebi+' '+req.query.shimetime+':'+req.query.shimemin+':00']);
 
   function return_result(flg) {
     console.log('err: '+flg);
@@ -187,7 +189,7 @@ exports.update_hed_name = function(req, res) {
     var err_flg = false;
     var cnt = 0;
     const dbm = await getPostgresClient();
-    const sql = 'UPDATE TO_DO_LIST_HED SET NAME = $3 WHERE GROUP_NO = $1 AND NO = $2';
+    const sql = 'UPDATE TO_DO_LIST_HED SET NAME = $3, SHIMEBI = TO_TIMESTAMP($4, \'YYYY/MM/DD HH24:MI:SS\') WHERE GROUP_NO = $1 AND NO = $2';
     try {
       await dbm.begin();
       const result = await dbm.execute(sql, params);
@@ -214,9 +216,9 @@ exports.insert_hed = function(req, res) {
   res.header("Content-Type", "application/json; charset=utf-8");
   var apiName = '[insert_hed]';
   console.log(apiName+': start');
-  console.log('group_no:'+req.query.group_no+', no:'+req.query.no+',name:'+req.query.name+',sort:'+req.query.sort);
+  console.log('user_id:'+req.query.user_id+', group_no:'+req.query.group_no+', no:'+req.query.no+',name:'+req.query.name+',sort:'+req.query.sort+',shimebi:'+req.query.shimebi+',time:'+req.query.shimetime+',minute:'+req.query.shimemin);
   /* DTL削除=>HED登録 */
-  delete_dtl(req.query.group_no, req.query.no, req.query.name, req.query.sort);
+  delete_dtl(req.query.user_id, req.query.group_no, req.query.no);
 
   function return_result(flg) {
     console.log('err: '+flg);
@@ -229,18 +231,21 @@ exports.insert_hed = function(req, res) {
         result: 1,
         no: req.query.no,
         name: req.query.name,
-        sort: req.query.sort
+        sort: req.query.sort,
+        shimebi: req.query.shimebi,
+        time: req.query.shimetime,
+        min: req.query.shimemin
       });
     }
   }
 
   /* 削除処理 */
-  async function delete_dtl(group_no, no, name, sort) {
+  async function delete_dtl(user_id, group_no, no) {
     var err_flg = false;
     var cnt = 0;
     const dbm = await getPostgresClient();
-    const sql = 'DELETE FROM TO_DO_LIST_DTL WHERE GROUP_NO = $1 AND NO = $2';
-    const params = [group_no, no];
+    const sql = 'DELETE FROM TO_DO_LIST_DTL WHERE GROUP_NO = $1 AND USER_ID = $2 AND NO = $3';
+    const params = [group_no, user_id, no];
     try {
       await dbm.begin();
       const result = await dbm.execute(sql, params);
@@ -255,7 +260,7 @@ exports.insert_hed = function(req, res) {
       if(err_flg) {
         return_result(err_flg)
       }else {
-        insert_hed([group_no, no, name, 0, sort]);
+        insert_hed([group_no, user_id, no, req.query.name, 0, req.query.sort, req.query.shimebi+' '+req.query.shimetime+':'+req.query.shimemin+':00']);
       }
     }
   }
@@ -265,7 +270,7 @@ exports.insert_hed = function(req, res) {
     var err_flg = false;
     var cnt = 0;
     const dbm = await getPostgresClient();
-    const sql = 'INSERT INTO TO_DO_LIST_HED (GROUP_NO, NO, NAME, CHECK_FLG, SORT) VALUES ($1, $2, $3, $4, $5)';
+    const sql = 'INSERT INTO TO_DO_LIST_HED (GROUP_NO, USER_ID, NO, NAME, CHECK_FLG, SORT,SHIMEBI) VALUES ($1, $2, $3, $4, $5, $6, TO_TIMESTAMP($7, \'YYYY/MM/DD HH24:MI:SS\'))';
     try {
       await dbm.begin();
       const result = await dbm.execute(sql, params);
@@ -288,9 +293,9 @@ exports.select_dtl = function(req, res) {
   res.header("Content-Type", "application/json; charset=utf-8");
   var apiName = '[select_dtl]';
   console.log(apiName+': start');
-  console.log('group_no:'+req.query.group_no+', no:'+req.query.no);
+  console.log('user_id:'+req.query.user_id+', group_no:'+req.query.group_no+', no:'+req.query.no);
   /* 検索処理を実行 */
-  select_dtl([req.query.group_no, req.query.no]);
+  select_dtl([req.query.group_no, req.query.user_id, req.query.no]);
 
   /* 正常時、検索結果を返す */
   function return_result(flg, data, cnt) {
@@ -319,7 +324,7 @@ exports.select_dtl = function(req, res) {
     var cnt = 0;
     var result;
     const dbm = await getPostgresClient();
-    const sql = 'SELECT DTL_NO,NAME,SORT FROM TO_DO_LIST_DTL WHERE GROUP_NO = $1 AND NO = $2 ORDER BY SORT';
+    const sql = 'SELECT DTL_NO,NAME,SORT FROM TO_DO_LIST_DTL WHERE GROUP_NO = $1 AND USER_ID = $2 AND NO = $3 ORDER BY SORT';
     try {
       result = await dbm.execute(sql, params);
       cnt = result.rowCount;
@@ -339,9 +344,9 @@ exports.insert_dtl = function(req, res) {
   res.header("Content-Type", "application/json; charset=utf-8");
   var apiName = '[insert_dtl]';
   console.log(apiName+': start');
-  console.log('group_no:'+req.query.group_no+', no:'+req.query.no+', name:'+req.query.name);
+  console.log('user_id:'+req.query.user_id+', group_no:'+req.query.group_no+', no:'+req.query.no+', name:'+req.query.name);
   /* 検索処理=>追加処理を実行 */
-  select_dtl([req.query.group_no, req.query.no]);
+  select_dtl([req.query.group_no, req.query.user_id, req.query.no]);
 
   function return_result(flg, dtl_no, sort) {
     console.log('err: '+flg);
@@ -366,7 +371,7 @@ exports.insert_dtl = function(req, res) {
     var cnt = 0;
     var result;
     const dbm = await getPostgresClient();
-    const sql = 'SELECT MAX(DTL_NO) AS DTL_NO,MAX(SORT) AS SORT FROM TO_DO_LIST_DTL WHERE GROUP_NO = $1 AND NO = $2';
+    const sql = 'SELECT MAX(DTL_NO) AS DTL_NO,MAX(SORT) AS SORT FROM TO_DO_LIST_DTL WHERE GROUP_NO = $1 AND USER_ID = $2 AND NO = $3';
     try {
       result = await dbm.execute(sql, params);
       cnt = result.rowCount;
@@ -381,7 +386,7 @@ exports.insert_dtl = function(req, res) {
         var new_dtl_no = result.rows[0].dtl_no+1;
         var new_sort = result.rows[0].sort+1;
         console.log('dtl_no:'+new_dtl_no+',sort:'+new_sort);
-        insert_dtl([req.query.group_no, req.query.no, new_dtl_no, req.query.name, new_sort]);
+        insert_dtl([req.query.group_no, req.query.user_id, req.query.no, new_dtl_no, req.query.name, new_sort]);
       }
     }
   }
@@ -391,7 +396,7 @@ exports.insert_dtl = function(req, res) {
     var err_flg = false;
     var cnt = 0;
     const dbm = await getPostgresClient();
-    const sql = 'INSERT INTO TO_DO_LIST_DTL (GROUP_NO, NO, DTL_NO, NAME, SORT) VALUES ($1, $2, $3, $4, $5)';
+    const sql = 'INSERT INTO TO_DO_LIST_DTL (GROUP_NO, USER_ID, NO, DTL_NO, NAME, SORT) VALUES ($1, $2, $3, $4, $5, $6)';
     try {
       await dbm.begin();
       const result = await dbm.execute(sql, params);
@@ -403,7 +408,7 @@ exports.insert_dtl = function(req, res) {
       err_flg = true;
     } finally {
       await dbm.release();
-      return_result(err_flg, params[2], params[3])
+      return_result(err_flg, params[3], params[5])
     }
   }
 
@@ -414,9 +419,9 @@ exports.update_dtl_name = function(req, res) {
   res.header("Content-Type", "application/json; charset=utf-8");
   var apiName = '[update_dtl_name]';
   console.log(apiName+': start');
-  console.log('group_no:'+req.query.group_no+', no:'+req.query.no+', dtl_no:'+req.query.dtl_no+', name:'+req.query.name);
+  console.log('user_id:'+req.query.user_id+', group_no:'+req.query.group_no+', no:'+req.query.no+', dtl_no:'+req.query.dtl_no+', name:'+req.query.name);
   /* updateを実行 */
-  update_dtl_name([req.query.group_no, req.query.no, req.query.dtl_no, req.query.name]);
+  update_dtl_name([req.query.group_no, req.query.user_id, req.query.no, req.query.dtl_no, req.query.name]);
 
   function return_result(flg) {
     console.log('err: '+flg);
@@ -434,7 +439,7 @@ exports.update_dtl_name = function(req, res) {
     var err_flg = false;
     var cnt = 0;
     const dbm = await getPostgresClient();
-    const sql = 'UPDATE TO_DO_LIST_DTL SET NAME = $4 WHERE GROUP_NO = $1 AND NO = $2 AND DTL_NO = $3';
+    const sql = 'UPDATE TO_DO_LIST_DTL SET NAME = $5 WHERE GROUP_NO = $1 AND USER_ID = $2 AND NO = $3 AND DTL_NO = $4';
     try {
       await dbm.begin();
       const result = await dbm.execute(sql, params);
@@ -461,9 +466,9 @@ exports.delete_dtl = function(req, res) {
   res.header("Content-Type", "application/json; charset=utf-8");
   var apiName = '[delete_dtl]';
   console.log(apiName+': start');
-  console.log('group_no:'+req.query.group_no+', no:'+req.query.no+', dtl_no:'+req.query.dtl_no);
+  console.log('user_id:'+req.query.user_id+', group_no:'+req.query.group_no+', no:'+req.query.no+', dtl_no:'+req.query.dtl_no);
   /* deleteを実行 */
-  delete_dtl([req.query.group_no, req.query.no, req.query.dtl_no]);
+  delete_dtl([req.query.group_no, req.query.user_id, req.query.no, req.query.dtl_no]);
 
   function return_result(flg, cnt) {
     console.log('err: '+flg);
@@ -486,7 +491,7 @@ exports.delete_dtl = function(req, res) {
     var err_flg = false;
     var cnt = 0;
     const dbm = await getPostgresClient();
-    const sql = 'DELETE FROM TO_DO_LIST_DTL WHERE GROUP_NO = $1 AND NO = $2 AND DTL_NO = $3';
+    const sql = 'DELETE FROM TO_DO_LIST_DTL WHERE GROUP_NO = $1 AND USER_ID = $2 AND NO = $3 AND DTL_NO = $4';
     try {
       await dbm.begin();
       const result = await dbm.execute(sql, params);

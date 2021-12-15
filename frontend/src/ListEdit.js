@@ -1,3 +1,4 @@
+import './common.css';
 import React,{ useState,useEffect } from 'react';
 import { useHistory,useLocation } from 'react-router-dom';
 import { Container, Draggable } from 'react-smooth-dnd';
@@ -10,9 +11,15 @@ import '@fortawesome/fontawesome-free/js/regular';
 
 import 'bulma/css/bulma.min.css';
 
-/* リスト表示 */
-function Todo({ array }) {
+import ColorPicker from './ColorPicker';
 
+/* リスト表示 */
+function Todo({ userData, array }) {
+
+  /* ユーザーデータ */
+  const [user, setUser] = React.useState({});
+  /* 表示サイズ */
+  const [sizeClass, setSizeClass] = React.useState('Med');
   /* リストデータ */
   const [items, setItems] = React.useState([]);
   /* 保存ボタンのdisabled */
@@ -31,22 +38,9 @@ function Todo({ array }) {
   /* DB登録データ */
   const [apiDatas, setApiDatas] = React.useState(new Map());
 
-
-  /* モーダルのスタイル */
-  const modalStyle : ReactModal.Styles = {
-    content: {
-      top: '50%',
-      left: '50%',
-      right: 'auto',
-      bottom: 'auto',
-      marginRight: '-50%',
-      transform: 'translate(-50%, -50%)'
-    },
-    // 親ウィンドウのスタイル（ちょっと暗くする）
-    overlay: {
-      background: 'rgba(0, 0, 0, 0.2)'
-    }
-  };
+  const onClickLogout = () => {
+    history.push({ pathname: '/' });
+  }
 
   /* モーダルを開いた時の処理 */
   const modalOpen = () => {
@@ -124,9 +118,14 @@ function Todo({ array }) {
     /* ローディング表示 */
     setLoading(true);
 
+    const newItems = items.map(item => {
+      item.user_id = user.user_id;
+      return item;
+    });
+
     fetch('/update_main_sort', {
       method : 'POST',
-      body : JSON.stringify(items),
+      body : JSON.stringify(newItems),
       headers : new Headers({ 'Content-type' : 'application/json' })
     }).then((res) => res.json())
       .then(
@@ -151,10 +150,15 @@ function Todo({ array }) {
 
   /* ダイアログのinput変更時のイベント */
   const changeDatas = text => {
-    const data = new Map();
-    data.action = apiDatas.action;
-    data.no = apiDatas.no;
+    var data = apiDatas;
     data.name = text;
+    setApiDatas(data);
+  }
+
+  /* ダイアログの色変更時のイベント */
+  const changeDatasColor = text => {
+    var data = apiDatas;
+    data.color = text;
     setApiDatas(data);
   }
 
@@ -165,15 +169,22 @@ function Todo({ array }) {
     const data = new Map();
     data.action = 'update';
     data.no = no;
-    data.name = '';
-    setApiDatas(data);
     /* モーダル情報をセット */
     const modalData = new Map();
-    modalData.title = 'グループ名称変更';
-    modalData.text = 'グループ名を入力して下さい';
+    modalData.title = 'グループ編集';
+    modalData.nameLabel = 'グループ名';
+    modalData.colorLabel = 'カラー';
     modalData.execName = '変更';
     modalData.phName = text;
     modalData.model = 'input';
+    items.map(item => {
+      if (item.group_no === no) {
+        data.name = item.name;
+        data.color = item.color;
+        modalData.color = item.color;
+      }
+    });
+    setApiDatas(data);
     setModalDatas(modalData);
     setShowModal(true);
   }
@@ -238,13 +249,13 @@ function Todo({ array }) {
       });
     }
 
-    fetch('/insert_main?group_no='+insert_no+'&name='+text+'&sort='+insert_sort)
+    fetch('/insert_main?user_id='+user.user_id+'&group_no='+insert_no+'&name='+text+'&sort='+insert_sort)
       .then((res) => res.json())
       .then(
         (data) => {
           if(data.result===1) {
-          setItems([...items, { key: insert_no, group_no: insert_no, name: text, cnt: 0, sort: insert_sort }]);
-          setDatas([...items, { key: insert_no, group_no: insert_no, name: text, cnt: 0, sort: insert_sort }]);
+            setItems([...items, { key: insert_no, group_no: insert_no, name: text, cnt: 0, color: 'dcdcdc', sort: insert_sort }]);
+            setDatas([...items, { key: insert_no, group_no: insert_no, name: text, cnt: 0, color: 'dcdcdc', sort: insert_sort }]);
           }else {
             alert('insert failed');
           }
@@ -260,12 +271,13 @@ function Todo({ array }) {
     const newItems = items.map(item => {
       if (item.group_no === apiDatas.no) {
         item.name = apiDatas.name;
+        item.color = apiDatas.color.replace('#','');
       }
       return item;
     });
     setItems(newItems);
 
-    fetch('/update_main_name?group_no='+apiDatas.no+'&name='+apiDatas.name)
+    fetch('/update_main_name?user_id='+user.user_id+'&group_no='+apiDatas.no+'&name='+apiDatas.name+'&color='+apiDatas.color.replace('#',''))
       .then((res) => res.json())
       .then(
         (data) => {
@@ -285,7 +297,7 @@ function Todo({ array }) {
     /* ローディング表示 */
     setLoading(true);
 
-    fetch('/delete_main?group_no='+no)
+    fetch('/delete_main?user_id='+user.user_id+'&group_no='+no)
       .then((res) => res.json())
       .then(
         (data) => {
@@ -324,8 +336,25 @@ function Todo({ array }) {
 
   /* 戻る */
   const goBack = () => {
-    history.push({ pathname: '/', state: { data: datas }});
+    if(!datas[0]) {
+      history.push({ pathname: '/Main', state: { user: user, data: [{ cnt: 0 }] }});
+    }else {
+      history.push({ pathname: '/Main', state: { user: user, data: datas }});
+    }
   }
+
+  useEffect(() => {
+    setUser(userData);
+    var font = 'Med';
+    if(userData.font_size==0) {
+      font = 'Small';
+    }else if(userData.font_size==1) {
+      font = 'Med';
+    }else if(userData.font_size==2) {
+      font = 'Large';
+    }
+    setSizeClass(font);
+  }, [userData]);
 
   /* 初期表示時の処理 */
   useEffect(() =>{
@@ -333,6 +362,22 @@ function Todo({ array }) {
     setDatas(array);
     setItems(array);
   },[array]);
+
+  /* モーダルのスタイル */
+  const modalStyle : ReactModal.Styles = {
+    content: {
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)'
+    },
+    // 親ウィンドウのスタイル（ちょっと暗くする）
+    overlay: {
+      background: 'rgba(0, 0, 0, 0.2)'
+    }
+  };
 
   return (
     <div>
@@ -348,14 +393,23 @@ function Todo({ array }) {
           items={items}
           modalData={modalDatas}
           onChangeInput={changeDatas}
+          onChangeColor={changeDatasColor}
           onClickOk={modalOk}
           onClickClose={modalClose}
+          sizeClass={sizeClass}
         />
       </ReactModal>
       <div className="panel">
         {/* ヘッダー */}
-        <div className="panel-heading">
-           ToDo List 追加・編集
+        <div class="panel-heading">
+          <div className={classNames("panel-block", "pad0mar0")}>
+            <span className={classNames("column", "is-10", "pad0mar0", "title"+sizeClass)}>
+              ToDo List 追加・編集
+            </span>
+            <span className={classNames("column", "is-2", "pad0mar0")} align="center">
+              <button onClick={onClickLogout}><span className={"medBtnFont"+sizeClass}>ログアウト</span></button>
+            </span>
+          </div>
         </div>
         {/* テキスト入力欄 */}
         <Input onAdd={handleAdd} isLoading={ loading } />
@@ -366,11 +420,13 @@ function Todo({ array }) {
           isLoading={loading}
           mainUpdate={showUpdModal}
           mainDelete={showDelModal}
+          sizeClass={sizeClass}
         />
         {/* ローディング中に表示させる用 */}
         <SubList
           items={items}
           isLoading={loading}
+          sizeClass={sizeClass}
         />
         {/* フッター */}
         <Footer
@@ -379,6 +435,7 @@ function Todo({ array }) {
           disabled={updDisabled}
           onClickBack={goBack}
           isLoading={loading}
+          sizeClass={sizeClass}
         />
       </div>
     </div>
@@ -412,44 +469,31 @@ function Loader({ isLoading }) {
 }
 
 /* 確認ダイアログの中身 */
-function ModalInside({ items, modalData, onChangeInput, onClickOk, onClickClose }) {
+function ModalInside({ items, modalData, onChangeInput, onChangeColor, onClickOk, onClickClose, sizeClass }) {
   const model = modalData.model;
 
   const inputChange = e => {
     onChangeInput(e.target.value);
   }
 
-  const modalTextStyle ={
-    margin: 20,
-  }
-
-  const buttonStyle = {
-    fontSize: '20px',
-  }
-
-  const footerStyle = {
-    padding: 0,
-    marginBottom: 10,
-  }
-
   if(model==='simple') {
     return (
       <div className="panel">
         {/* ヘッダー */}
-        <div className="panel-heading">
+        <div className={classNames("panel-heading", "titleMod"+sizeClass)}>
            {modalData.title}
         </div>
         {/* メイン */}
-        <div style={modalTextStyle}>
-          <span>{modalData.text}</span>
+        <div className={"mar20"}>
+          <span className={"medText"+sizeClass}>{modalData.text}</span>
         </div>
         {/* フッター */}
-        <div className="panel-block" style={footerStyle}>
-          <span class="column is-6" align="center" style={footerStyle}>
-            <button onClick={onClickOk} style={buttonStyle}>{modalData.execName}</button>
+        <div className={classNames("panel-block", "pad0marB10")}>
+          <span className={classNames("column", "is-6", "pad0marB10")} align="center">
+            <button className={"largeBtnFont"+sizeClass} onClick={onClickOk}>{modalData.execName}</button>
           </span>
-          <span class="column is-6" align="center" style={footerStyle}>
-            <button onClick={onClickClose} style={buttonStyle}>取消</button>
+          <span className={classNames("column", "is-6", "pad0marB10")} align="center">
+            <button className={"largeBtnFont"+sizeClass} onClick={onClickClose}>取消</button>
           </span>
         </div>
       </div>
@@ -458,13 +502,13 @@ function ModalInside({ items, modalData, onChangeInput, onClickOk, onClickClose 
     return (
       <div className="panel">
         {/* ヘッダー */}
-        <div className="panel-heading">
+        <div className={classNames("panel-heading", "titleMod"+sizeClass)}>
            {modalData.title}
         </div>
         {/* メイン */}
-        <div style={modalTextStyle}>
-          <div>
-            <span>{modalData.text}</span>
+        <div className={"mar20"}>
+          <div className={"labelFont"+sizeClass}>
+            <span>{modalData.nameLabel}</span>
           </div>
           <div>
             <input
@@ -474,14 +518,23 @@ function ModalInside({ items, modalData, onChangeInput, onClickOk, onClickClose 
               onChange={inputChange}
             />
           </div>
+          <div className={"labelFont"+sizeClass}>
+            <span>{modalData.colorLabel}</span>
+          </div>
+          <div>
+            <ColorPicker
+              color={modalData.color}
+              onChangeColor={onChangeColor}
+            />
+          </div>
         </div>
         {/* フッター */}
-        <div className="panel-block" style={footerStyle}>
-          <span class="column is-6" align="center" style={footerStyle}>
-            <button onClick={onClickOk} style={buttonStyle}>{modalData.execName}</button>
+        <div className={classNames("panel-block", "pad0marB10")}>
+          <span className={classNames("column", "is-6", "pad0marB10")} align="center">
+            <button className={"largeBtnFont"+sizeClass} onClick={onClickOk}>{modalData.execName}</button>
           </span>
-          <span class="column is-6" align="center" style={footerStyle}>
-            <button onClick={onClickClose} style={buttonStyle}>取消</button>
+          <span className={classNames("column", "is-6", "pad0marB10")} align="center">
+            <button className={"largeBtnFont"+sizeClass} onClick={onClickClose}>取消</button>
           </span>
         </div>
       </div>
@@ -490,7 +543,7 @@ function ModalInside({ items, modalData, onChangeInput, onClickOk, onClickClose 
 }
 
 /* メインのリスト */
-function MainList({ items, onDrop, isLoading, mainUpdate, mainDelete }) {
+function MainList({ items, onDrop, isLoading, mainUpdate, mainDelete, sizeClass }) {
 
   /* ローディング画面表示中は表示しない */
   const disp = () => {
@@ -517,6 +570,7 @@ function MainList({ items, onDrop, isLoading, mainUpdate, mainDelete }) {
               isMain={true}
               mainUpdate={mainUpdate}
               mainDelete={mainDelete}
+              sizeClass={sizeClass}
             />
           </Draggable>
         ))}
@@ -526,7 +580,7 @@ function MainList({ items, onDrop, isLoading, mainUpdate, mainDelete }) {
 }
 
 /* サブのリスト */
-function SubList({ items, isLoading, mainUpdate, mainDelete }) {
+function SubList({ items, isLoading, mainUpdate, mainDelete, sizeClass }) {
 
   /* ローディング画面表示中のみ表示する */
   const disp = isLoading => {
@@ -551,6 +605,7 @@ function SubList({ items, isLoading, mainUpdate, mainDelete }) {
           isMain={false}
           mainUpdate={mainUpdate}
           mainDelete={mainDelete}
+          sizeClass={sizeClass}
         />
       ))}
     </div>
@@ -558,7 +613,7 @@ function SubList({ items, isLoading, mainUpdate, mainDelete }) {
 }
 
 /* リスト中身 */
-function TodoItem({ item, isMain, mainUpdate, mainDelete }) {
+function TodoItem({ item, isMain, mainUpdate, mainDelete, sizeClass }) {
 
   const onClickUpdate = () => {
     mainUpdate(item.group_no, item.name);
@@ -594,33 +649,38 @@ function TodoItem({ item, isMain, mainUpdate, mainDelete }) {
     margin: 0,
   };
 
-  const style1 = {
-    padding: 5,
-    margin: 0,
-  }
-
   const style2 = {
-    padding: 5,
-    margin: 0,
     borderBottom: border_bottom(),
   }
 
+  const colorBoxStyle = {
+    background: '#'+item.color,
+    height: '20px',
+    width: '20px',
+  }
+
   return (
-    <label class="panel-block columns" style={ style }>
-      <div id="list_div" class="column is-10" onClick={onListClick} style={ style2 }>
-        <span>
-          {item.name} [{item.cnt}]
+    <div className={classNames("panel-bloc", "columns")} style={ style }>
+      <div id="list_div" className={classNames("column", "is-10", "pad5mar0")} onClick={onListClick} style={ style2 }>
+      <div className={"dispFlex"}>
+        <div style={colorBoxStyle}></div>
+        <div className={"width5"}></div>
+        <div>
+          <span className={"medText"+sizeClass}>
+            {item.name} [{item.cnt}]
+          </span>
+        </div>
+      </div>
+      </div>
+      <div className={classNames("column", "is-2", "pad5mar0")} onClick={noClickEvent} style={ style2 }>
+        <span className={"pad5mar0"}>
+          <button onClick={onClickUpdate}><span className={"medBtnFont"+sizeClass}>編集</span></button>
+        </span>
+        <span className={"pad5mar0"}>
+          <button onClick={onClickDelete}><span className={"medBtnFont"+sizeClass}>削除</span></button>
         </span>
       </div>
-      <div class="column is-2" onClick={noClickEvent} style={ style2 }>
-        <span style={ style1 }>
-          <button onClick={onClickUpdate}>編集</button>
-        </span>
-        <span style={ style1 }>
-          <button onClick={onClickDelete}>削除</button>
-        </span>
-      </div>
-    </label>
+    </div>
   );
 }
 
@@ -653,7 +713,7 @@ function Input({ onAdd, isLoading }) {
 }
 
 /* フッター */
-function Footer({ items, onClickUpd, disabled, onClickBack, isLoading }) {
+function Footer({ items, onClickUpd, disabled, onClickBack, isLoading, sizeClass }) {
 
   const border_top = () => {
     if(isLoading) {
@@ -664,44 +724,52 @@ function Footer({ items, onClickUpd, disabled, onClickBack, isLoading }) {
   }
 
   const style = {
-    padding: 0,
-    margin: 0,
     borderTop: border_top(),
   };
 
-  const style2 = {
-    padding: 5,
-    margin: 0,
-  }
-
   return (
-    <div className="panel-block" style={style}>
-      <span class="column is-8" style={style2}>
+    <div className={classNames("panel-block", "pad0mar0")} style={style}>
+      <span className={classNames("column", "is-8", "pad5mar0")}>
       </span>
-      <span class="column is-2" align="center" style={style2}>
-        <button onClick={onClickUpd} disabled={disabled}>並び順保存</button>
+      <span className={classNames("column", "is-2", "pad5mar0")} align="center">
+        <button onClick={onClickUpd} disabled={disabled}><span className={"medBtnFont"+sizeClass}>並び順保存</span></button>
       </span>
-      <span class="column is-2" align="center" style={style2}>
-        <button onClick={onClickBack}>戻る</button>
+      <span className={classNames("column", "is-2", "pad5mar0")} align="center">
+        <button onClick={onClickBack}><span className={"medBtnFont"+sizeClass}>戻る</span></button>
       </span>
     </div>
   );
 }
 
 /* 初期処理 */
-function HedSort() {
+function ListEdit() {
   const location = useLocation();
+  const [userData, setUserData] = useState({});
   const [array, setArray] = useState([{}]);
 
+  const history = useHistory();
+
   useEffect(() =>{
-    setArray(location.state.data);
+    var user_flg = false;
+    /* ユーザーデータ確認 */
+    if(location.state!=null) {
+      if(location.state.user!=null) {
+        user_flg = true;
+      }
+    }
+    if(!user_flg) {
+      history.push({ pathname: '/' });
+    }else {
+      setUserData(location.state.user);
+      setArray(location.state.data);
+    }
   },[])
 
   return (
       <div className="container is-fluid">
-        <Todo array={ array }/>
+        <Todo userData={ userData } array={ array }/>
       </div>
   );
 }
 
-export default HedSort;
+export default ListEdit;

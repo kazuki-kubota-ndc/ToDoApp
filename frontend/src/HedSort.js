@@ -1,3 +1,4 @@
+import './common.css';
 import React,{ useState,useEffect } from 'react';
 import { useHistory,useLocation } from 'react-router-dom';
 import { Container, Draggable } from 'react-smooth-dnd';
@@ -11,9 +12,13 @@ import '@fortawesome/fontawesome-free/js/regular';
 import 'bulma/css/bulma.min.css';
 
 /* リスト表示 */
-function Todo({ array, listArray, mainArray }) {
+function Todo({ userData, array, listArray, mainArray }) {
 
-  /* リストNoとタイトル */
+  /* ユーザーデータ */
+  const [user, setUser] = React.useState({});
+  /* 表示サイズ */
+  const [sizeClass, setSizeClass] = React.useState('Med');
+  /* リストNo,リスト名,カラー */
   const [listDatas, setListDatas] = React.useState({});
   /* リストデータ */
   const [items, setItems] = React.useState([]);
@@ -33,21 +38,9 @@ function Todo({ array, listArray, mainArray }) {
   /* 戻るで返却する用のデータ */
   const [datas, setDatas] = React.useState([]);
 
-  /* モーダルのスタイル */
-  const modalStyle : ReactModal.Styles = {
-    content: {
-      top: '50%',
-      left: '50%',
-      right: 'auto',
-      bottom: 'auto',
-      marginRight: '-50%',
-      transform: 'translate(-50%, -50%)'
-    },
-    // 親ウィンドウのスタイル（ちょっと暗くする）
-    overlay: {
-      background: 'rgba(0, 0, 0, 0.2)'
-    }
-  };
+  const onClickLogout = () => {
+    history.push({ pathname: '/' });
+  }
 
   /* モーダルを開いた時の処理 */
   const modalOpen = () => {
@@ -109,9 +102,14 @@ function Todo({ array, listArray, mainArray }) {
     /* ローディング表示 */
     setLoading(true);
 
+    const newItems = items.map(item => {
+      item.user_id = user.user_id;
+      return item;
+    });
+
     fetch('/upd_hed_sort', {
       method : 'POST',
-      body : JSON.stringify(items),
+      body : JSON.stringify(newItems),
       headers : new Headers({ 'Content-type' : 'application/json' })
     }).then((res) => res.json())
       .then(
@@ -136,8 +134,21 @@ function Todo({ array, listArray, mainArray }) {
 
   /* 戻る */
   const goBack = () => {
-    history.push({ pathname: '/ListMain', state: { data: datas, listData: listDatas, mainData: mainDatas }});
+    history.push({ pathname: '/ListMain', state: { user: user, data: datas, listData: listDatas, mainData: mainDatas }});
   }
+
+  useEffect(() => {
+    setUser(userData);
+    var font = 'Med';
+    if(userData.font_size==0) {
+      font = 'Small';
+    }else if(userData.font_size==1) {
+      font = 'Med';
+    }else if(userData.font_size==2) {
+      font = 'Large';
+    }
+    setSizeClass(font);
+  }, [userData]);
 
   /* 初期表示時の処理 */
   useEffect(() =>{
@@ -153,6 +164,26 @@ function Todo({ array, listArray, mainArray }) {
   useEffect(() =>{
     setMainDatas(mainArray);
   },[mainArray]);
+
+  /* モーダルのスタイル */
+  const modalStyle : ReactModal.Styles = {
+    content: {
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)'
+    },
+    // 親ウィンドウのスタイル（ちょっと暗くする）
+    overlay: {
+      background: 'rgba(0, 0, 0, 0.2)'
+    }
+  };
+
+  const panelHedStyle = {
+    background: '#'+listDatas.color,
+  }
 
   return (
     <div>
@@ -170,23 +201,36 @@ function Todo({ array, listArray, mainArray }) {
           onChangeInput={changeDatas}
           onClickOk={modalOk}
           onClickClose={modalClose}
+          listDatas={listDatas}
+          sizeClass={sizeClass}
         />
       </ReactModal>
       <div className="panel">
         {/* ヘッダー */}
-        <div className="panel-heading">
-           [{ listDatas.name }] 並び順変更
+        <div className={"panel-heading"} style={panelHedStyle}>
+          { listDatas &&
+            <div className={classNames("panel-block", "pad0mar0")}>
+              <span className={classNames("column", "is-10", "pad0mar0", "title"+sizeClass)}>
+                [{ listDatas.name }] 並び順変更
+              </span>
+              <span className={classNames("column", "is-2", "pad0mar0")} align="center">
+                <button onClick={onClickLogout}><span className={"medBtnFont"+sizeClass}>ログアウト</span></button>
+              </span>
+            </div>
+          }
         </div>
         {/* ドラッグ＆ドロップ出来るメイン表示 */}
         <MainList
           items={items}
           onDrop={onDrop}
           isLoading={loading}
+          sizeClass={sizeClass}
         />
         {/* ローディング中に表示させる用 */}
         <SubList
           items={items}
           isLoading={loading}
+          sizeClass={sizeClass}
         />
         {/* フッター */}
         <Footer
@@ -195,6 +239,7 @@ function Todo({ array, listArray, mainArray }) {
           disabled={updDisabled}
           onClickBack={goBack}
           isLoading={loading}
+          sizeClass={sizeClass}
         />
       </div>
     </div>
@@ -228,59 +273,50 @@ function Loader({ isLoading }) {
 }
 
 /* 確認ダイアログの中身 */
-function ModalInside({ items, modalData, onChangeInput, onClickOk, onClickClose }) {
+function ModalInside({ items, modalData, onChangeInput, onClickOk, onClickClose, listDatas, sizeClass }) {
   const model = modalData.model;
 
   const inputChange = e => {
     onChangeInput(e.target.value);
   }
 
-  const modalTextStyle ={
-    margin: 20,
-  }
-
-  const buttonStyle = {
-    fontSize: '20px',
-  }
-
-  const footerStyle = {
-    padding: 0,
-    marginBottom: 10,
+  const panelHedStyle = {
+    background: '#'+listDatas.color,
   }
 
   if(model==='simple') {
     return (
-      <div className="panel">
+      <div className={"panel"}>
         {/* ヘッダー */}
-        <div className="panel-heading">
+        <div className={classNames("panel-heading", "titleMod"+sizeClass)} style={panelHedStyle}>
            {modalData.title}
         </div>
         {/* メイン */}
-        <div style={modalTextStyle}>
-          <span>{modalData.text}</span>
+        <div className={"mar20"}>
+          <span className={"medText"+sizeClass}>{modalData.text}</span>
         </div>
         {/* フッター */}
-        <div className="panel-block" style={footerStyle}>
-          <span class="column is-6" align="center" style={footerStyle}>
-            <button onClick={onClickOk} style={buttonStyle}>{modalData.execName}</button>
+        <div className={classNames("panel-block", "pad0marB10")}>
+          <span className={classNames("column", "is-6", "pad0marB10")} align="center">
+            <button className={classNames("largeBtnFont"+sizeClass)} onClick={onClickOk}>{modalData.execName}</button>
           </span>
-          <span class="column is-6" align="center" style={footerStyle}>
-            <button onClick={onClickClose} style={buttonStyle}>取消</button>
+          <span className={classNames("column", "is-6", "pad0marB10")} align="center">
+            <button className={classNames("largeBtnFont"+sizeClass)} onClick={onClickClose}>取消</button>
           </span>
         </div>
       </div>
     );
   }else if(model==='input') {
     return (
-      <div className="panel">
+      <div className={"panel"}>
         {/* ヘッダー */}
-        <div className="panel-heading">
+        <div className={classNames("panel-heading", "titleMod"+sizeClass)} style={panelHedStyle}>
            {modalData.title}
         </div>
         {/* メイン */}
-        <div style={modalTextStyle}>
+        <div className={"mar20"}>
           <div>
-            <span>{modalData.text}</span>
+            <span className={"medText"+sizeClass}>{modalData.text}</span>
           </div>
           <div>
             <input
@@ -292,12 +328,12 @@ function ModalInside({ items, modalData, onChangeInput, onClickOk, onClickClose 
           </div>
         </div>
         {/* フッター */}
-        <div className="panel-block" style={footerStyle}>
-          <span class="column is-6" align="center" style={footerStyle}>
-            <button onClick={onClickOk} style={buttonStyle}>{modalData.execName}</button>
+        <div className={classNames("panel-block", "pad0marB10")}>
+          <span className={classNames("column", "is-6", "pad0marB10")} align="center">
+            <button className={classNames("largeBtnFont"+sizeClass)} onClick={onClickOk}>{modalData.execName}</button>
           </span>
-          <span class="column is-6" align="center" style={footerStyle}>
-            <button onClick={onClickClose} style={buttonStyle}>取消</button>
+          <span className={classNames("column", "is-6", "pad0marB10")} align="center">
+            <button className={classNames("largeBtnFont"+sizeClass)} onClick={onClickClose}>取消</button>
           </span>
         </div>
       </div>
@@ -306,7 +342,7 @@ function ModalInside({ items, modalData, onChangeInput, onClickOk, onClickClose 
 }
 
 /* メインのリスト */
-function MainList({items, onDrop, isLoading}) {
+function MainList({items, onDrop, isLoading, sizeClass }) {
 
   /* ローディング画面表示中は表示しない */
   const disp = () => {
@@ -331,6 +367,7 @@ function MainList({items, onDrop, isLoading}) {
               key={item.key}
               item={item}
               isMain={true}
+              sizeClass={sizeClass}
             />
           </Draggable>
         ))}
@@ -340,7 +377,7 @@ function MainList({items, onDrop, isLoading}) {
 }
 
 /* サブのリスト */
-function SubList({items, isLoading}) {
+function SubList({items, isLoading, sizeClass }) {
 
   /* ローディング画面表示中のみ表示する */
   const disp = isLoading => {
@@ -363,6 +400,7 @@ function SubList({items, isLoading}) {
           key={item.key}
           item={item}
           isMain={false}
+          sizeClass={sizeClass}
         />
       ))}
     </div>
@@ -370,7 +408,7 @@ function SubList({items, isLoading}) {
 }
 
 /* リスト中身 */
-function TodoItem({ item, isMain }) {
+function TodoItem({ item, isMain, sizeClass }) {
 
   const border_bottom = () => {
     if(isMain) {
@@ -392,27 +430,36 @@ function TodoItem({ item, isMain }) {
   }
 
   return (
-    <label class="columns" className="panel-block" style={ style }>
-        <div class="column is-12" style={ style2 }>
-          <input
-            type="checkbox"
-            checked={item.done}
-            readonly
-          />
-          <span
-            className={classNames({
-              'has-text-grey-light': item.done
-            })}
-          >
-            {item.text}
-          </span>
+    <label className={classNames("columns", "panel-block")} style={ style }>
+        <div className={classNames("column", "is-12")} style={ style2 }>
+          <div className={"columns"}>
+            <div className={classNames("column", "is-3")}>
+              <input
+                type="checkbox"
+                checked={item.done}
+                readonly
+              />
+              <span
+                className={classNames({
+                  'has-text-grey-light': item.done
+                }, "medText"+sizeClass)}
+              >
+                {item.text}
+              </span>
+            </div>
+            <div className={classNames("column", "is-9")}>
+              <span className={"medText"+sizeClass}>
+                [ {item.shimebi} ]
+              </span>
+            </div>
+          </div>
         </div>
     </label>
   );
 }
 
 /* フッター */
-function Footer({ items, onClickUpd, disabled, onClickBack, isLoading }) {
+function Footer({ items, onClickUpd, disabled, onClickBack, isLoading, sizeClass }) {
 
   const border_top = () => {
     if(isLoading) {
@@ -423,26 +470,19 @@ function Footer({ items, onClickUpd, disabled, onClickBack, isLoading }) {
   }
 
   const style = {
-    padding: 0,
-    margin: 0,
     borderTop: border_top(),
   };
 
-  const style2 = {
-    padding: 5,
-    margin: 0,
-  }
-
   return (
-    <div className="panel-block" style={style}>
-      <span class="column is-8" style={style2}>
+    <div className={classNames("panel-block", "pad0mar0")} style={style}>
+      <span className={classNames("column", "is-8", "pad5mar0", "medText"+sizeClass)}>
         全 {items.length} 件
       </span>
-      <span class="column is-2" align="center" style={style2}>
-        <button onClick={onClickUpd} disabled={disabled}>保存</button>
+      <span className={classNames("column", "is-2", "pad5mar0")} align="center">
+        <button onClick={onClickUpd} disabled={disabled}><span className={"medBtnFont"+sizeClass}>保存</span></button>
       </span>
-      <span class="column is-2" align="center" style={style2}>
-        <button onClick={onClickBack}>戻る</button>
+      <span className={classNames("column", "is-2", "pad5mar0")} align="center">
+        <button onClick={onClickBack}><span className={"medBtnFont"+sizeClass}>戻る</span></button>
       </span>
     </div>
   );
@@ -451,19 +491,35 @@ function Footer({ items, onClickUpd, disabled, onClickBack, isLoading }) {
 /* 初期処理 */
 function HedSort() {
   const location = useLocation();
-  const [listArray, setListArray] = useState({});
+  const [userData, setUserData] = useState({});
   const [array, setArray] = useState([{}]);
+  const [listArray, setListArray] = useState({});
   const [mainArray, setMainArray] = useState([{}]);
 
+  const history = useHistory();
+
   useEffect(() =>{
-    setListArray(location.state.listData);
-    setArray(location.state.data);
-    setMainArray(location.state.mainData);
+    var user_flg = false;
+    /* ユーザーデータ確認 */
+    if(location.state!=null) {
+      if(location.state.user!=null) {
+        user_flg = true;
+      }
+    }
+    if(!user_flg) {
+      history.push({ pathname: '/' });
+    }else {
+      setUserData(location.state.user);
+
+      setListArray(location.state.listData);
+      setArray(location.state.data);
+      setMainArray(location.state.mainData);
+    }
   },[])
 
   return (
       <div className="container is-fluid">
-        <Todo array={ array } listArray={ listArray } mainArray={ mainArray }/>
+        <Todo userData={ userData } array={ array } listArray={ listArray } mainArray={ mainArray }/>
       </div>
   );
 }

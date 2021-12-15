@@ -1,0 +1,87 @@
+.pad0mar0 {
+  padding: 0px;
+  margin: 0px;
+}
+.pad5mar0 {
+  padding: 5px;
+  margin: 0px;
+}
+.mar20 {
+  margin: 20px;
+}
+.pad0marB10 {
+  padding: 0px;
+  margin-bottom: 10px;
+}
+
+
+.dispFlex {
+  display: flex;
+}
+
+.width70 {
+  width: 70%;
+}
+.width5 {
+  width: 5px;
+}
+
+/* サイズ小 */
+.titleSmall {
+  font-size: 20px;
+}
+.titleModSmall {
+  font-size: 16px;
+}
+.medBtnFontSmall {
+  font-size: 10px;
+}
+.largeBtnFontSmall {
+  font-size: 16px;
+}
+.labelFontSmall {
+  font-size: 8px;
+}
+.medTextSmall {
+  font-size: 12px;
+}
+
+/* サイズ中（デフォルト） */
+.titleMed {
+  font-size: 24px;
+}
+.titleModMed {
+  font-size: 20px;
+}
+.medBtnFontMed {
+  font-size: 14px;
+}
+.largeBtnFontMed {
+  font-size: 20px;
+}
+.labelFontMed {
+  font-size: 12px;
+}
+.medTextMed {
+  font-size: 16px;
+}
+
+/* サイズ大 */
+.titleLarge {
+  font-size: 30px;
+}
+.titleModLarge {
+  font-size: 28px;
+}
+.medBtnFontLarge {
+  font-size: 18px;
+}
+.largeBtnFontLarge {
+  font-size: 28px;
+}
+.labelFontLarge {
+  font-size: 18px;
+}
+.medTextLarge {
+  font-size: 20px;
+}

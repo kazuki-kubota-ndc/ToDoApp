@@ -1,7 +1,12 @@
+import './common.css';
 import React,{ useState,useEffect } from 'react';
 import { useHistory,useLocation } from 'react-router-dom';
 import classNames from 'classnames';
 import ReactModal from 'react-modal';
+import moment from 'moment';
+import 'react-dates/initialize';
+import 'react-dates/lib/css/_datepicker.css';
+import { SingleDatePicker } from 'react-dates';
 import '@fortawesome/fontawesome-free/js/fontawesome';
 import '@fortawesome/fontawesome-free/js/solid';
 import '@fortawesome/fontawesome-free/js/regular';
@@ -10,9 +15,13 @@ import 'bulma/css/bulma.min.css';
 
 
 /* リスト表示 */
-function Todo({ array, listArray, mainArray }) {
+function Todo({ userData, array, listArray, mainArray }) {
 
-  /* リストNoとリスト名 */
+  /* ユーザーデータ */
+  const [user, setUser] = React.useState({});
+  /* 表示サイズ */
+  const [sizeClass, setSizeClass] = React.useState('Med');
+  /* リストNo,リスト名,カラー */
   const [listDatas, setListDatas] = React.useState({});
   /* リストデータ */
   const [items, setItems] = React.useState([]);
@@ -29,6 +38,9 @@ function Todo({ array, listArray, mainArray }) {
   const [modalDatas, setModalDatas] = React.useState(new Map());
   /* DB登録データ */
   const [datas, setDatas] = React.useState(new Map());
+  /* 日付データ */
+  const [date, setDate] = useState(moment);
+  const dateFormat = 'YYYY/MM/DD';
 
   /* 戻るで返却する用のデータ */
   const [mainDatas, setMainDatas] = React.useState([]);
@@ -40,21 +52,9 @@ function Todo({ array, listArray, mainArray }) {
     setLoading(flg);
   }
 
-  /* モーダルのスタイル */
-  const modalStyle : ReactModal.Styles = {
-    content: {
-      top: '50%',
-      left: '50%',
-      right: 'auto',
-      bottom: 'auto',
-      marginRight: '-50%',
-      transform: 'translate(-50%, -50%)'
-    },
-    // 親ウィンドウのスタイル（ちょっと暗くする）
-    overlay: {
-      background: 'rgba(0, 0, 0, 0.2)'
-    }
-  };
+  const onClickLogout = () => {
+    history.push({ pathname: '/' });
+  }
 
   /* モーダルを開いた時の処理 */
   const modalOpen = () => {
@@ -63,6 +63,7 @@ function Todo({ array, listArray, mainArray }) {
 
   /* モーダルを閉めた時の処理 */
   const modalClose = () => {
+    setDate(moment(new Date()));
     setShowModal(false);
   }
 
@@ -108,6 +109,13 @@ function Todo({ array, listArray, mainArray }) {
         setShowModal(false);
         dtlUpd();
       }
+    /* 日付入力 */
+    }else if(datas.action==='date') {
+      /* 日付チェック */
+      
+      /* モーダル閉じる */
+      setShowModal(false);
+      createList();
     }
   }
 
@@ -122,22 +130,38 @@ function Todo({ array, listArray, mainArray }) {
     setItems(newItems);
   }
 
-  /* リスト名編集確認ダイアログ */
+  /* リスト編集確認ダイアログ */
   const showUpdModal = (no, text) => {
 
     /* 確認後の処理内容をセット */
     const data = new Map();
     data.action = 'update';
     data.no = no;
-    data.name = '';
-    setDatas(data);
     /* モーダル情報をセット */
     const modalData = new Map();
-    modalData.title = 'リスト名称変更';
-    modalData.text = 'リスト名を入力して下さい';
+    modalData.title = 'リスト編集';
+    modalData.nameLabel = 'リスト名';
+    modalData.dateLabel = '日付';
+    modalData.timeLabel = '時';
+    modalData.minLabel = '分';
     modalData.execName = '変更';
     modalData.phName = text;
-    modalData.model = 'input';
+    modalData.model = 'inputColor';
+
+    items.map(item => {
+      if (item.key === no) {
+        data.name = item.text;
+        data.shimebi = item.shimebi;
+        data.time = item.shimetime;
+        data.min = item.shimemin;
+        modalData.time = item.shimetime;
+        modalData.min = item.shimemin;
+        /* 日付情報をセット */
+        setDate(moment(item.shimebi));
+      }
+    });
+
+    setDatas(data);
     setModalDatas(modalData);
     setShowModal(true);
   }
@@ -149,17 +173,21 @@ function Todo({ array, listArray, mainArray }) {
     setDatas(data);
   }
 
-  /* リスト名変更処理 */
+  /* リスト編集処理 */
   const rowUpdate = () => {
+    const shimebi = date.format(dateFormat);
     const newItems = items.map(item => {
       if (item.key === datas.no) {
         item.text = datas.name;
+        item.shimebi = shimebi;
+        item.shimetime = datas.time;
+        item.shimemin = datas.min;
       }
       return item;
     });
     setItems(newItems);
 
-    fetch('/update_hed_name?group_no='+listDatas.group_no+'&no='+datas.no+'&name='+datas.name)
+    fetch('/update_hed_name?user_id='+user.user_id+'&group_no='+listDatas.group_no+'&no='+datas.no+'&name='+datas.name+'&shimebi='+datas.shimebi+'&shimetime='+datas.time+'&shimemin='+datas.min)
       .then((res) => res.json())
       .then(
         (data) => {
@@ -190,7 +218,7 @@ function Todo({ array, listArray, mainArray }) {
       check_flg = 1;
     }
     setItems(newItems);
-    fetch('/update_check?group_no='+listDatas.group_no+'&no='+checked.key+'&check_flg='+check_flg)
+    fetch('/update_check?user_id='+user.user_id+'&group_no='+listDatas.group_no+'&no='+checked.key+'&check_flg='+check_flg)
       .then((res) => res.json())
       .then(
         (data) => {
@@ -233,7 +261,7 @@ function Todo({ array, listArray, mainArray }) {
     /* ローディング表示 */
     setLoading(true);
 
-    fetch('/delete_hed?group_no='+listDatas.group_no+'&no='+no)
+    fetch('/delete_hed?user_id='+user.user_id+'&group_no='+listDatas.group_no+'&no='+no)
       .then((res) => res.json())
       .then(
         (data) => {
@@ -273,7 +301,43 @@ function Todo({ array, listArray, mainArray }) {
 
   /* 並び順変更実行 */
   const onClickSort = () => {
-    history.push({ pathname: '/HedSort', state: { data: items, listData: listDatas, mainData: mainDatas }});
+    history.push({ pathname: '/HedSort', state: { user: user, data: items, listData: listDatas, mainData: mainDatas }});
+  }
+
+  /* 日付確認ダイアログ */
+  const showDateModal = text => {
+
+    /* 確認後の処理内容をセット */
+    const data = new Map();
+    data.action = 'date';
+    data.text = text;
+    data.time = '12';
+    data.min = '0';
+    setDatas(data);
+    /* モーダル情報をセット */
+    const modalData = new Map();
+    modalData.title = '日時入力 ['+text+']';
+    modalData.dateLabel = '日付';
+    modalData.timeLabel = '時';
+    modalData.minLabel = '分';
+    modalData.execName = '決定';
+    modalData.model = 'date';
+    setModalDatas(modalData);
+    setShowModal(true);
+  }
+
+  /* 時間のデータをセット */
+  const changeTime = text => {
+    const data = datas;
+    data.time = text;
+    setDatas(data);
+  }
+
+  /* 分のデータをセット */
+  const changeMin = text => {
+    const data = datas;
+    data.min = text;
+    setDatas(data);
   }
 
   /* inputタブでEnterを押した時の処理 */
@@ -282,6 +346,15 @@ function Todo({ array, listArray, mainArray }) {
       alert('List Name is empty');
       return;
     }
+    showDateModal(text);
+  }
+
+  /* リスト追加処理 */
+  const createList = () => {
+    const text = datas.text;
+    const shimebi = date.format(dateFormat);
+    const shimetime = datas.time;
+    const shimemin = datas.min;
 
     var insert_sort = 1;
     var insert_no = 1;
@@ -298,12 +371,12 @@ function Todo({ array, listArray, mainArray }) {
     /* ローディング表示 */
     setLoading(true);
 
-    fetch('/insert_hed?group_no='+listDatas.group_no+'&no='+insert_no+'&name='+text+'&sort='+insert_sort)
+    fetch('/insert_hed?user_id='+user.user_id+'&group_no='+listDatas.group_no+'&no='+insert_no+'&name='+text+'&sort='+insert_sort+'&shimebi='+shimebi+'&shimebitime='+shimetime+'&shimebimin='+shimemin)
       .then((res) => res.json())
       .then(
         (data) => {
           if(data.result===1) {
-            setItems([...items, { key: data.no, no: data.no, text: data.name, name: data.name, done: false, sort: data.sort }]);
+            setItems([...items, { key: data.no, no: data.no, text: data.name, name: data.name, done: false, sort: data.sort, shimebi: data.shimebi, shimetime: data.time, shimemin: data.min }]);
           }else {
             alert('insert failed');
           }
@@ -315,7 +388,7 @@ function Todo({ array, listArray, mainArray }) {
           }
         }
       );
-  };
+  }
 
   /* DTL追加ダイアログ */
   const showDtlAddModal = no => {
@@ -406,7 +479,7 @@ function Todo({ array, listArray, mainArray }) {
     /* ローディング表示 */
     setLoading(true);
 
-    fetch('/insert_dtl?group_no='+group_no+'&no='+no+'&name='+name)
+    fetch('/insert_dtl?user_id='+user.user_id+'&group_no='+group_no+'&no='+no+'&name='+name)
       .then((res) => res.json())
       .then(
         (data) => {
@@ -456,7 +529,7 @@ function Todo({ array, listArray, mainArray }) {
     /* 詳細データ取得 */
     const selectDtl = () => {
 
-      fetch('/select_dtl?group_no='+group_no+'&no='+no)
+      fetch('/select_dtl?user_id='+user.user_id+'&group_no='+group_no+'&no='+no)
         .then((res) => res.json())
         .then(
           (data) => {
@@ -513,7 +586,7 @@ function Todo({ array, listArray, mainArray }) {
     /* ローディング表示 */
     setLoading(true);
 
-    fetch('/update_dtl_name?group_no='+listDatas.group_no+'&no='+no+'&dtl_no='+dtl_no+'&name='+name)
+    fetch('/update_dtl_name?user_id='+user.user_id+'&group_no='+listDatas.group_no+'&no='+no+'&dtl_no='+dtl_no+'&name='+name)
       .then((res) => res.json())
       .then(
         (data) => {
@@ -558,7 +631,7 @@ function Todo({ array, listArray, mainArray }) {
     /* ローディング表示 */
     setLoading(true);
 
-    fetch('/delete_dtl?group_no='+listDatas.group_no+'&no='+no+'&dtl_no='+dtl_no)
+    fetch('/delete_dtl?user_id='+user.user_id+'&group_no='+listDatas.group_no+'&no='+no+'&dtl_no='+dtl_no)
       .then((res) => res.json())
       .then(
         (data) => {
@@ -604,7 +677,7 @@ function Todo({ array, listArray, mainArray }) {
 
   /* 戻るボタン */
   const onClickBack = () => {
-    history.push({ pathname: '/', state: { data: mainDatas }});
+    history.push({ pathname: '/Main', state: { user: user, data: mainDatas }});
   }
 
   /* フィルターを変えた時の処理 */
@@ -616,6 +689,19 @@ function Todo({ array, listArray, mainArray }) {
     if (filter === 'TODO') return !item.done;
     if (filter === 'DONE') return item.done;
   });
+
+  useEffect(() => {
+    setUser(userData);
+    var font = 'Med';
+    if(userData.font_size==0) {
+      font = 'Small';
+    }else if(userData.font_size==1) {
+      font = 'Med';
+    }else if(userData.font_size==2) {
+      font = 'Large';
+    }
+    setSizeClass(font);
+  }, [userData]);
 
   /* DBから取得したデータを初期データとしてセット */
   useEffect(() => {
@@ -650,14 +736,24 @@ function Todo({ array, listArray, mainArray }) {
     setMainDatas(mainArray);
   }, [mainArray]);
 
-  const style = {
-    padding: 0,
-    margin: 0,
+  /* モーダルのスタイル */
+  const modalStyle : ReactModal.Styles = {
+    content: {
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)'
+    },
+    // 親ウィンドウのスタイル（ちょっと暗くする）
+    overlay: {
+      background: 'rgba(0, 0, 0, 0.2)'
+    }
   };
 
-  const style2 = {
-    padding: 5,
-    margin: 0,
+  const panelHedStyle = {
+    background: '#'+listDatas.color,
   }
 
     return (
@@ -673,24 +769,43 @@ function Todo({ array, listArray, mainArray }) {
           <ModalInside
             modalData={modalDatas}
             onChangeInput={changeDatas}
+            onChangeTime={changeTime}
+            onChangeMin={changeMin}
             onClickOk={modalOk}
             onClickClose={modalClose}
+            listDatas={listDatas}
+            date={date}
+            setDate={setDate}
+            sizeClass={sizeClass}
           />
         </ReactModal>
-        <div class="panel">
+        <div className={"panel"}>
           {/* ヘッダー */}
-            { listDatas && <div class="panel-heading">{listDatas.name}</div> }
+          <div className={"panel-heading"} style={panelHedStyle}>
+            { listDatas &&
+              <div className={classNames("panel-block", "pad0mar0")}>
+                <span className={classNames("column", "is-10", "pad0mar0", "title"+sizeClass)}>
+                  {listDatas.name}
+                </span>
+                <span className={classNames("column", "is-2", "pad0mar0")} align="center">
+                  <button onClick={onClickLogout}><span className={"medBtnFont"+sizeClass}>ログアウト</span></button>
+                </span>
+              </div>
+            }
+          </div>
           {/* テキスト入力欄 */}
           <Input onAdd={handleAdd} isLoading={ loading } />
           {/* フィルター */}
           <Filter
             onChange={handleFilterChange}
             value={filter}
+            sizeClass={sizeClass}
           />
           {/* リスト表示部分 */}
           {displayItems.map(item => (
             <TodoItem
               key={item.key}
+              user={user}
               items={items}
               setItems={setItems}
               item={item}
@@ -703,19 +818,24 @@ function Todo({ array, listArray, mainArray }) {
               onClickDtlDel={showDtlDelModal}
               listData={listDatas}
               mainData={mainDatas}
+              sizeClass={sizeClass}
             />
           ))}
           {/* フッター */}
-          <div class="panel-block" style={style}>
-            <span class="column is-8" style={style2}>
+          <div className={classNames("panel-block", "pad0mar0")}>
+            <span className={classNames("column", "is-8", "pad5mar0", "medText"+sizeClass)}>
               全 {items.length} 件
             </span>
-            <span class="column is-2" align="center" style={style2}>
-              <button onClick={onClickSort} disabled={sortDisabled}>並び順変更</button>
-            </span>
-            <span class="column is-2" align="center" style={style2}>
-              <button onClick={onClickBack}>戻る</button>
-            </span>
+            {listDatas.name &&
+              <span className={classNames("column", "is-2", "pad5mar0")} align="center">
+                <button onClick={onClickSort} disabled={sortDisabled}><span className={"medBtnFont"+sizeClass}>並び順変更</span></button>
+              </span>
+            }
+            {listDatas.name &&
+              <span className={classNames("column", "is-2", "pad5mar0")} align="center">
+                <button onClick={onClickBack}><span className={"medBtnFont"+sizeClass}>戻る</span></button>
+              </span>
+            }
           </div>
         </div>
       </div>
@@ -740,7 +860,7 @@ function Loader({ isLoading }) {
     return (
       /* ローディングアイコン */
       <div style={style}>
-        <i class="fas fa-spinner fa-spin fa-5x"></i>
+        <i className={classNames("fas", "fa-spinner", "fa-spin", "fa-5x")}></i>
       </div>
     );
   } else{
@@ -749,59 +869,60 @@ function Loader({ isLoading }) {
 }
 
 /* 確認ダイアログの中身 */
-function ModalInside({ modalData, onChangeInput, onClickOk, onClickClose }) {
+function ModalInside({ modalData, onChangeInput, onChangeTime, onChangeMin, onClickOk, onClickClose, listDatas, date, setDate, sizeClass  }) {
   const model = modalData.model;
+
+  const [focused, setFocused] = useState(false);
 
   const inputChange = e => {
     onChangeInput(e.target.value);
   }
 
-  const modalTextStyle = {
-    margin: 20,
+  const selectChangeTime = e => {
+    onChangeTime(e.target.value);
   }
 
-  const buttonStyle = {
-    fontSize: '20px',
+  const selectChangeMin = e => {
+    onChangeMin(e.target.value);
   }
 
-  const footerStyle = {
-    padding: 0,
-    marginBottom: 10,
+  const panelHedStyle = {
+    background: '#'+listDatas.color,
   }
 
   if(model==='simple') {
     return (
-      <div class="panel">
+      <div className={"panel"}>
         {/* ヘッダー */}
-        <div class="panel-heading">
+        <div className={classNames("panel-heading", "titleMod"+sizeClass)} style={panelHedStyle}>
            {modalData.title}
         </div>
         {/* メイン */}
-        <div style={modalTextStyle}>
-          <span>{modalData.text}</span>
+        <div className={"mar20"}>
+          <span className={"medText"+sizeClass}>{modalData.text}</span>
         </div>
         {/* フッター */}
-        <div class="panel-block" style={footerStyle}>
-          <span class="column is-6" align="center" style={footerStyle}>
-            <button onClick={onClickOk} style={buttonStyle}>{modalData.execName}</button>
+        <div className={classNames("panel-block", "pad0marB10")}>
+          <span className={classNames("column", "is-6", "pad0marB10")} align="center">
+            <button className={"largeBtnFont"+sizeClass} onClick={onClickOk}>{modalData.execName}</button>
           </span>
-          <span class="column is-6" align="center" style={footerStyle}>
-            <button onClick={onClickClose} style={buttonStyle}>取消</button>
+          <span className={classNames("column", "is-6", "pad0marB10")} align="center">
+            <button className={"largeBtnFont"+sizeClass} onClick={onClickClose}>取消</button>
           </span>
         </div>
       </div>
     );
   }else if(model==='input') {
     return (
-      <div class="panel">
+      <div className={"panel"}>
         {/* ヘッダー */}
-        <div class="panel-heading">
+        <div className={classNames("panel-heading", "titleMod"+sizeClass)} style={panelHedStyle}>
            {modalData.title}
         </div>
         {/* メイン */}
-        <div style={modalTextStyle}>
-          <div>
-            <span>{modalData.text}</span>
+        <div className={"mar20"}>
+          <div className={"labelFont"+sizeClass}>
+            <span>{modalData.nameLabel}</span>
           </div>
           <div>
             <input
@@ -813,12 +934,169 @@ function ModalInside({ modalData, onChangeInput, onClickOk, onClickClose }) {
           </div>
         </div>
         {/* フッター */}
-        <div class="panel-block" style={footerStyle}>
-          <span class="column is-6" align="center" style={footerStyle}>
-            <button onClick={onClickOk} style={buttonStyle}>{modalData.execName}</button>
+        <div className={classNames("panel-block", "pad0marB10")}>
+          <span className={classNames("column", "is-6", "pad0marB10")} align="center">
+            <button className={"largeBtnFont"+sizeClass} onClick={onClickOk}>{modalData.execName}</button>
           </span>
-          <span class="column is-6" align="center" style={footerStyle}>
-            <button onClick={onClickClose} style={buttonStyle}>取消</button>
+          <span className={classNames("column", "is-6", "pad0marB10")} align="center">
+            <button className={"largeBtnFont"+sizeClass} onClick={onClickClose}>取消</button>
+          </span>
+        </div>
+      </div>
+    );
+  }else if(model==='inputColor') {
+    return (
+      <div className={"panel"}>
+        {/* ヘッダー */}
+        <div className={classNames("panel-heading", "titleMod"+sizeClass)} style={panelHedStyle}>
+           {modalData.title}
+        </div>
+        {/* メイン */}
+        <div className={"mar20"}>
+
+          <div className={"columns"}>
+            <div className={classNames("column", "is-12")}>
+
+              <div className={"labelFont"+sizeClass}>
+                <span>{modalData.nameLabel}</span>
+              </div>
+              <div>
+                <input
+                  class="input"
+                  type="text"
+                  placeholder={modalData.phName}
+                  onChange={inputChange}
+                />
+              </div>
+
+            </div>
+          </div>
+          <div className={"columns"}>
+            <div className={classNames("column", "is-6")}>
+
+              <div className={"labelFont"+sizeClass}>
+                <span>{modalData.dateLabel}</span>
+              </div>
+              <div>
+                <SingleDatePicker
+                  date={date}
+                  onDateChange={date => setDate(date)}
+                  focused={focused}
+                  onFocusChange={focused => setFocused(focused)}
+                  id="date"
+                  onClose={focused => setFocused(false)}
+                  displayFormat="YYYY/MM/DD"
+                  withPortal={true}
+                />
+              </div>
+
+            </div>
+            <div className={classNames("column", "is-3")}>
+
+              <div className={"labelFont"+sizeClass}>
+                <span>{modalData.timeLabel}</span>
+              </div>
+              <div>
+                <SelectTime
+                  selectChangeTime={selectChangeTime}
+                  defValue={modalData.time}
+                />
+              </div>
+
+            </div>
+            <div className={classNames("column", "is-3")}>
+
+              <div className={"labelFont"+sizeClass}>
+                <span>{modalData.minLabel}</span>
+              </div>
+              <div>
+                <SelectMin
+                  selectChangeMin={selectChangeMin}
+                  defValue={modalData.min}
+                />
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+        {/* フッター */}
+        <div className={classNames("panel-block", "pad0marB10")}>
+          <span className={classNames("column", "is-6", "pad0marB10")} align="center">
+            <button className={"largeBtnFont"+sizeClass} onClick={onClickOk}>{modalData.execName}</button>
+          </span>
+          <span className={classNames("column", "is-6", "pad0marB10")} align="center">
+            <button className={"largeBtnFont"+sizeClass} onClick={onClickClose}>取消</button>
+          </span>
+        </div>
+      </div>
+    );
+  }else if(model==='date') {
+    return (
+      <div className={"panel"}>
+        {/* ヘッダー */}
+        <div className={classNames("panel-heading", "titleMod"+sizeClass)} style={panelHedStyle}>
+           {modalData.title}
+        </div>
+        {/* メイン */}
+        <div className={"mar20"}>
+
+          <div className={"columns"}>
+            <div className={classNames("column", "is-6")}>
+
+              <div className={"labelFont"+sizeClass}>
+                <span>{modalData.dateLabel}</span>
+              </div>
+              <div>
+                <SingleDatePicker
+                  date={date}
+                  onDateChange={date => setDate(date)}
+                  focused={focused}
+                  onFocusChange={focused => setFocused(focused)}
+                  id="date"
+                  onClose={focused => setFocused(false)}
+                  displayFormat="YYYY/MM/DD"
+                  withPortal={true}
+                />
+              </div>
+
+            </div>
+            <div className={classNames("column", "is-3")}>
+
+              <div className={"labelFont"+sizeClass}>
+                <span>{modalData.timeLabel}</span>
+              </div>
+              <div>
+                <SelectTime
+                  selectChangeTime={selectChangeTime}
+                  defValue={12}
+                />
+              </div>
+
+            </div>
+            <div className={classNames("column", "is-3")}>
+
+              <div className={"labelFont"+sizeClass}>
+                <span>{modalData.minLabel}</span>
+              </div>
+              <div>
+                <SelectMin
+                  selectChangeMin={selectChangeMin}
+                  defValue={0}
+                />
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+        {/* フッター */}
+        <div className={classNames("panel-block", "pad0marB10")}>
+          <span className={classNames("column", "is-6", "pad0marB10")} align="center">
+            <button className={"largeBtnFont"+sizeClass} onClick={onClickOk}>{modalData.execName}</button>
+          </span>
+          <span className={classNames("column", "is-6", "pad0marB10")} align="center">
+            <button className={"largeBtnFont"+sizeClass} onClick={onClickClose}>取消</button>
           </span>
         </div>
       </div>
@@ -826,8 +1104,50 @@ function ModalInside({ modalData, onChangeInput, onClickOk, onClickClose }) {
   }
 }
 
+/* 時間選択プルダウン */
+function SelectTime({ selectChangeTime, defValue }) {
+  const htmls = [];
+
+  const style = {
+    color: '#5e5e5e',
+    fontSize: '18px',
+    border: '#dbdbdb 1px solid',
+  }
+
+  for(let i=0;i<24;i++) {
+    htmls.push(<option style={style} value={String(23-i)}>{String(23-i)}</option>);
+  }
+
+  return (
+    <select className={"select"} style={style} defaultValue={defValue} onChange={selectChangeTime}>
+      { htmls }
+    </select>
+  );
+}
+
+/* 分選択プルダウン */
+function SelectMin({ selectChangeMin, defValue }) {
+  const htmls = [];
+
+  const style = {
+    color: '#5e5e5e',
+    fontSize: '18px',
+    border: '#dbdbdb 1px solid',
+  }
+
+  for(let i=0;i<60;i++) {
+    htmls.push(<option style={style} value={String(59-i)}>{String(59-i)}</option>);
+  }
+
+  return (
+    <select className={"select"} style={style} defaultValue={defValue} onChange={selectChangeMin}>
+      { htmls }
+    </select>
+  );
+}
+
 /* リスト中身 */
-function TodoItem({ items, setItems, item, onCheck, onClickDel, onClickHedUpd, onLoading, onClickDtlAdd, onClickDtlUpd, onClickDtlDel, listData, mainData }) {
+function TodoItem({ user, items, setItems, item, onCheck, onClickDel, onClickHedUpd, onLoading, onClickDtlAdd, onClickDtlUpd, onClickDtlDel, listData, mainData, sizeClass }) {
 
   const history = useHistory();
 
@@ -863,7 +1183,7 @@ function TodoItem({ items, setItems, item, onCheck, onClickDel, onClickHedUpd, o
 
   const onListClick = e => {
     /* リスト内の要素をクリックした時は動かさない */
-    if(e.target.id==='list_div') {
+    if(e.target.className.match('click-list')) {
       /* リスト内の要素のイベントは動かさない */
       e.preventDefault();
       /* 詳細表示ステータス表示時は閉じる処理 */
@@ -878,7 +1198,7 @@ function TodoItem({ items, setItems, item, onCheck, onClickDel, onClickHedUpd, o
 
   /* データ取得（view:詳細表示、sort:ソート画面へ） */
   const selectDtl = action => {
-    fetch('/select_dtl?group_no='+listData.group_no+'&no='+item.no)
+    fetch('/select_dtl?user_id='+user.user_id+'&group_no='+listData.group_no+'&no='+item.no)
       .then((res) => res.json())
       .then(
         (data) => {
@@ -896,7 +1216,7 @@ function TodoItem({ items, setItems, item, onCheck, onClickDel, onClickHedUpd, o
               onLoading(false);
             /* ソート */
             }else if(action==='sort') {
-              history.push({ pathname: '/DtlSort', state: { data: data.data, listData: listData, title: item.name, no: item.no, mainData: mainData }});
+              history.push({ pathname: '/DtlSort', state: { user: user, data: data.data, listData: listData, title: item.name, no: item.no, mainData: mainData }});
             }
           /* 検索件数0件 */
           }else if(data.result===2) {
@@ -942,7 +1262,7 @@ function TodoItem({ items, setItems, item, onCheck, onClickDel, onClickHedUpd, o
       alert('詳細1件');
       onLoading(false);
     }else {
-      history.push({ pathname: '/DtlSort', state: { data: dtlItems, listData: listData, title: item.name, no: item.no, items: items, mainData: mainData }});
+      history.push({ pathname: '/DtlSort', state: { user: user, data: dtlItems, listData: listData, title: item.name, no: item.no, items: items, mainData: mainData }});
     }
 
   }
@@ -988,66 +1308,68 @@ function TodoItem({ items, setItems, item, onCheck, onClickDel, onClickHedUpd, o
     return return_flg;
   }
 
+  const dtlStyle = {
+    display: changeDisplay(showDtl),
+  };
+
   const style = {
     padding: 0,
     margin: 0,
   };
 
-  const style2 = {
-    padding: 5,
-    margin: 0,
-  }
-
-  const dtlStyle = {
-    padding: 5,
-    margin: 0,
-    display: changeDisplay(showDtl),
-  };
-
   return (
     <div>
       {/* HED */}
-      <label class="panel-block columns" style={ style }>
-        <div id="list_div" class="column is-8" onClick={onListClick} style={ style2 }>
-          <input
-            id="list_input"
-            type="checkbox"
-            checked={item.done}
-            onChange={checkboxChange}
-          />
-          <span
-            className={classNames({
-              'has-text-grey-light': item.done
-            })}
-          >
-            {item.text}
+      <label className={classNames("panel-block", "columns")} style={ style }>
+        <div className={classNames("column", "is-8", "click-list", "pad5mar0")} onClick={onListClick}>
+          <div className={classNames("columns", "click-list")} onClick={onListClick}>
+            <div className={classNames("column", "is-4", "click-list")} onClick={onListClick}>
+              <input
+                id="list_input"
+                type="checkbox"
+                checked={item.done}
+                onChange={checkboxChange}
+              />
+              <span
+                className={classNames({
+                  'has-text-grey-light': item.done
+                }, "medText"+sizeClass)}
+              >
+                {item.text}
+              </span>
+            </div>
+            <div className={classNames("column", "is-8", "click-list")} onClick={onListClick}>
+              <span className={"medText"+sizeClass}>
+                [ {item.shimebi+' '+('00'+item.shimetime).slice(-2)+':'+('00'+item.shimemin).slice(-2)} ]
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className={classNames("column", "is-2", "pad5mar0")} onClick={noClickEvent}>
+          <span className={"pad5mar0"}>
+            <button onClick={dtlAdd}><span className={"medBtnFont"+sizeClass}>追加</span></button>
+          </span>
+          <span className={"pad5mar0"}>
+            <button onClick={dtlSort} disabled={sortDisabled(showDtl)}><span className={"medBtnFont"+sizeClass}>並び順</span></button>
           </span>
         </div>
-        <div class="column is-2" onClick={noClickEvent} style={ style2 }>
-          <span style={ style2 }>
-            <button onClick={dtlAdd}>追加</button>
+        <div className={classNames("column", "is-2", "pad5mar0")} onClick={noClickEvent}>
+          <span className={"pad5mar0"}>
+            <button onClick={hedUpdate}><span className={"medBtnFont"+sizeClass}>編集</span></button>
           </span>
-          <span style={ style2 }>
-            <button onClick={dtlSort} disabled={sortDisabled(showDtl)}>並び順</button>
-          </span>
-        </div>
-        <div class="column is-2" onClick={noClickEvent} style={ style2 }>
-          <span style={ style2 }>
-            <button onClick={hedUpdate}>編集</button>
-          </span>
-          <span style={ style2 }>
-            <button onClick={rowDelete}>削除</button>
+          <span className={"pad5mar0"}>
+            <button onClick={rowDelete}><span className={"medBtnFont"+sizeClass}>削除</span></button>
           </span>
         </div>
       </label>
 
       {/* DTL */}
-      <label class="columns" onClick={noClickEvent} style={ dtlStyle }>
-        <div class="column" onClick={noClickEvent} style={ style }>
-          <label class="columns" onClick={noClickEvent} style={ style }>
-            <div class="column is-1" onClick={noClickEvent} style={ style2 }>
+      <label className={classNames("columns", "pad0mar0")} onClick={noClickEvent} style={ dtlStyle }>
+        <div className={classNames("column", "pad0mar0")} onClick={noClickEvent}>
+          <label className={classNames("columns", "pad0mar0")} onClick={noClickEvent}>
+            <div className={classNames("column", "is-1", "pad5mar0")} onClick={noClickEvent}>
             </div>
-            <div class="column is-11" onClick={noClickEvent} style={ style2 }>
+            <div className={classNames("column", "is-11", "pad5mar0")} onClick={noClickEvent}>
               {/* 詳細中身 */}
               {dtlItems.map(item => (
                 <TodoDtl
@@ -1056,6 +1378,7 @@ function TodoItem({ items, setItems, item, onCheck, onClickDel, onClickHedUpd, o
                   dtlUpdate={dtlUpdModal}
                   dtlDelete={dtlDelModal}
                   onLoading={onLoading}
+                  sizeClass={sizeClass}
                 />
               ))}
             </div>
@@ -1068,7 +1391,7 @@ function TodoItem({ items, setItems, item, onCheck, onClickDel, onClickHedUpd, o
 }
 
 /* 詳細部分中身 */
-function TodoDtl({ item, dtlUpdate, dtlDelete, onLoading }) {
+function TodoDtl({ item, dtlUpdate, dtlDelete, onLoading, sizeClass }) {
 
   const noClickEvent = e => {
     /* リスト内の要素のイベントは動かさない */
@@ -1083,11 +1406,6 @@ function TodoDtl({ item, dtlUpdate, dtlDelete, onLoading }) {
     dtlDelete(item.dtl_no, item.name);
   }
 
-  const style2 = {
-    padding: 5,
-    margin: 0,
-  }
-
   const style3 = {
     padding: 0,
     margin: 0,
@@ -1095,16 +1413,18 @@ function TodoDtl({ item, dtlUpdate, dtlDelete, onLoading }) {
   }
 
   return (
-    <label class="columns" style={ style3 }>
-      <div class="column is-10" onClick={noClickEvent} style={ style2 }>
-        {item.name}
-      </div>
-      <div class="column is-2" style={ style2 }>
-        <span style={ style2 }>
-          <button onClick={onClickUpd}>編集</button>
+    <label className={classNames("columns")} style={ style3 }>
+      <div className={classNames("column", "is-10", "pad5mar0")} onClick={noClickEvent}>
+        <span className={"medText"+sizeClass}>
+          {item.name}
         </span>
-        <span style={ style2 }>
-          <button onClick={onClickDel}>削除</button>
+      </div>
+      <div className={classNames("column", "is-12", "pad5mar0")}>
+        <span className={"pad5mar0"}>
+          <button onClick={onClickUpd}><span className={"medBtnFont"+sizeClass}>編集</span></button>
+        </span>
+        <span className={"pad5mar0"}>
+          <button onClick={onClickDel}><span className={"medBtnFont"+sizeClass}>削除</span></button>
         </span>
       </div>
     </label>
@@ -1125,7 +1445,7 @@ function Input({ onAdd, isLoading }) {
   };
 
   return (
-    <div class="panel-block">
+    <div className={"panel-block"}>
       <input
         class="input"
         type="text"
@@ -1140,28 +1460,28 @@ function Input({ onAdd, isLoading }) {
 }
 
 /* フィルター */
-function Filter({ value, onChange }) {
+function Filter({ value, onChange, sizeClass }) {
   const handleClick = (key, e) => {
     e.preventDefault();
     onChange(key);
   };
 
   return (
-    <div class="panel-tabs">
+    <div className={"panel-tabs"}>
       <a
         href="#"
         onClick={handleClick.bind(null, 'ALL')}
-        className={classNames({ 'is-active': value === 'ALL' })}
+        className={classNames({ 'is-active': value === 'ALL' }), "medBtnFont"+sizeClass}
       >All</a>
       <a
         href="#"
         onClick={handleClick.bind(null, 'TODO')}
-        className={classNames({ 'is-active': value === 'TODO' })}
+        className={classNames({ 'is-active': value === 'TODO' }), "medBtnFont"+sizeClass}
       >ToDo</a>
       <a
         href="#"
         onClick={handleClick.bind(null, 'DONE')}
-        className={classNames({ 'is-active': value === 'DONE' })}
+        className={classNames({ 'is-active': value === 'DONE' }), "medBtnFont"+sizeClass}
       >Done</a>
     </div>
   );
@@ -1170,37 +1490,53 @@ function Filter({ value, onChange }) {
 /* 初期処理 */
 function ListMain() {
   const location = useLocation();
+  const [userData, setUserData] = useState({});
   const [array, setArray] = useState([{}]);
   const [listArray, setListArray] = useState({});
   const [mainArray, setMainArray] = useState([{}]);
 
+  const history = useHistory();
+
   useEffect(() =>{
-    /* 初期表示 */
-    if(location.state.no!=null) {
-      fetch('/init?group_no='+location.state.no+'&name='+location.state.name)
-        .then((res) => res.json())
-        .then(
-          (data) => {
-            if(data.result===1) {
-              setArray(data.data);
+    var user_flg = false;
+    /* ユーザーデータ確認 */
+    if(location.state!=null) {
+      if(location.state.user!=null) {
+        user_flg = true;
+      }
+    }
+    if(!user_flg) {
+      history.push({ pathname: '/' });
+    }else {
+      setUserData(location.state.user);
+
+      /* 初期表示 */
+      if(location.state.no!=null) {
+        fetch('/list_main?user_id='+location.state.user.user_id+'&group_no='+location.state.no+'&name='+location.state.name+'&color='+location.state.color)
+          .then((res) => res.json())
+          .then(
+            (data) => {
+              if(data.result===1) {
+                setArray(data.data);
+              }
+              setListArray(data.listData);
+              setMainArray(location.state.data);
             }
-            setListArray(data.listData);
-            setMainArray(location.state.data);
-          }
-        );
-    /* ソートからの「戻る」 */
-    }else if(location.state.data!=null) {
-      setArray(location.state.data);
-      setListArray(location.state.listData);
-      setMainArray(location.state.mainData);
+          );
+      /* ソートからの「戻る」 */
+      }else if(location.state.data!=null) {
+        setArray(location.state.data);
+        setListArray(location.state.listData);
+        setMainArray(location.state.mainData);
+      }
     }
   
   },[])
 
 
   return (
-    <div class="container is-fluid">
-      <Todo array={ array } listArray={ listArray } mainArray={ mainArray } />
+    <div className={classNames("container", "is-fluid")}>
+      <Todo userData={ userData } array={ array } listArray={ listArray } mainArray={ mainArray } />
     </div>
   );
 }

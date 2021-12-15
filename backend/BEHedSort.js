@@ -22,14 +22,16 @@ exports.upd_hed_sort = function(req, res) {
   async function update_hed(items) {
     var err_flg = false;
     var log_message = '';
+    var user_id;
     const dbm = await getPostgresClient();
-    const sql = 'UPDATE TO_DO_LIST_HED SET SORT = $2 WHERE NO = $1';
+    const sql = 'UPDATE TO_DO_LIST_HED SET SORT = $3 WHERE USER_ID = $1 AND NO = $2';
     try {
       await dbm.begin();
       items.map(async item => {
-        const params = [item.no, item.sort];
+        const params = [item.user_id, item.no, item.sort];
         await dbm.execute(sql, params);
         log_message += '('+item.no+','+item.sort+'),';
+        user_id = item.user_id;
       });
       await dbm.commit();
     } catch (e) {
@@ -38,6 +40,7 @@ exports.upd_hed_sort = function(req, res) {
       err_flg = true;
     } finally {
       await dbm.release();
+      console.log('user_id: '+user_id);
       console.log('no,sort: '+log_message);
       return_result(err_flg);
     }
