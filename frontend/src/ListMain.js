@@ -371,7 +371,7 @@ function Todo({ userData, array, listArray, mainArray }) {
     /* ローディング表示 */
     setLoading(true);
 
-    fetch('/insert_hed?user_id='+user.user_id+'&group_no='+listDatas.group_no+'&no='+insert_no+'&name='+text+'&sort='+insert_sort+'&shimebi='+shimebi+'&shimebitime='+shimetime+'&shimebimin='+shimemin)
+    fetch('/insert_hed?user_id='+user.user_id+'&group_no='+listDatas.group_no+'&no='+insert_no+'&name='+text+'&sort='+insert_sort+'&shimebi='+shimebi+'&shimetime='+shimetime+'&shimemin='+shimemin)
       .then((res) => res.json())
       .then(
         (data) => {
