@@ -255,6 +255,7 @@ function Todo({ userData, array }) {
         (data) => {
           if(data.result===1) {
             setItems([...items, { key: insert_no, group_no: insert_no, name: text, cnt: 0, color: 'dcdcdc', sort: insert_sort }]);
+            /* 戻る用のデータも更新 */
             setDatas([...items, { key: insert_no, group_no: insert_no, name: text, cnt: 0, color: 'dcdcdc', sort: insert_sort }]);
           }else {
             alert('insert failed');
@@ -275,7 +276,10 @@ function Todo({ userData, array }) {
       }
       return item;
     });
-    setItems(newItems);
+    
+
+    /* ローディング表示 */
+    setLoading(true);
 
     fetch('/update_main_name?user_id='+user.user_id+'&group_no='+apiDatas.no+'&name='+apiDatas.name+'&color='+apiDatas.color.replace('#',''))
       .then((res) => res.json())
@@ -285,7 +289,13 @@ function Todo({ userData, array }) {
           if(!data.result===1) {
             alert('update failed');
             window.location.reload();
+          }else {
+            setItems(newItems);
+            /* 戻る用のデータも更新 */
+            setDatas(newItems);
           }
+          /* ローディング非表示 */
+          setLoading(false);
         }
       );
   }
