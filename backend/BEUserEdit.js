@@ -113,7 +113,7 @@ exports.insert_user = function(req, res) {
     var isUser = false;
     var result;
     const dbm = await getPostgresClient();
-    const sql = 'SELECT USER_ID,LOGIN_ID,USER_NAME,PASS,FONT_SIZE,ADMIN FROM USER_MST WHERE (USER_ID = $1 OR LOGIN_ID = $1)';
+    const sql = 'SELECT USER_ID,LOGIN_ID,USER_NAME,PASS,FONT_SIZE AS O_FONT,ADMIN FROM USER_MST WHERE (USER_ID = $1 OR LOGIN_ID = $1)';
     const params = [req.query.login_id];
     try {
       result = await dbm.execute(sql, params);
