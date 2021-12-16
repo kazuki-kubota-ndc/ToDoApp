@@ -647,11 +647,7 @@ function TodoItem({ item, isMain, mainUpdate, mainDelete, sizeClass }) {
   }
 
   const border_bottom = () => {
-    if(isMain) {
-      return "solid 1px #dcdcdc";
-    }else {
-      return "";
-    }
+    return "solid 1px #dcdcdc";
   }
 
   const style = {
