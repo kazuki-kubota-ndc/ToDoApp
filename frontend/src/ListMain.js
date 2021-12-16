@@ -1182,6 +1182,7 @@ function TodoItem({ user, items, setItems, item, onCheck, onClickDel, onClickHed
   }
 
   const onListClick = e => {
+
     /* リスト内の要素をクリックした時は動かさない */
     if(e.target.className.match('click-list')) {
       /* リスト内の要素のイベントは動かさない */
@@ -1321,8 +1322,8 @@ function TodoItem({ user, items, setItems, item, onCheck, onClickDel, onClickHed
     <div>
       {/* HED */}
       <label className={classNames("panel-block", "columns")} style={ style }>
-        <div className={classNames("column", "is-8", "click-list", "pad5mar0")} onClick={onListClick}>
-          <div className={classNames("columns", "click-list")} onClick={onListClick}>
+        <div className={classNames("column", "is-8", "click-list", "pad5mar0")}>
+          <div className={classNames("columns", "click-list")}>
             <div className={classNames("column", "is-4", "click-list")} onClick={onListClick}>
               <input
                 id="list_input"
@@ -1333,13 +1334,13 @@ function TodoItem({ user, items, setItems, item, onCheck, onClickDel, onClickHed
               <span
                 className={classNames({
                   'has-text-grey-light': item.done
-                }, "medText"+sizeClass)}
+                }, "medText"+sizeClass, "click-list")}
               >
                 {item.text}
               </span>
             </div>
             <div className={classNames("column", "is-8", "click-list")} onClick={onListClick}>
-              <span className={"medText"+sizeClass}>
+              <span className={classNames("medText"+sizeClass, "click-list")}>
                 [ {item.shimebi+' '+('00'+item.shimetime).slice(-2)+':'+('00'+item.shimemin).slice(-2)} ]
               </span>
             </div>
