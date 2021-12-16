@@ -151,11 +151,11 @@ function Todo({ userData, array, listArray, title, no, motoItems, mainArray }) {
   useEffect(() => {
     setUser(userData);
     var font = 'Med';
-    if(userData.font_size==0) {
+    if(userData.o_font==0) {
       font = 'Small';
-    }else if(userData.font_size==1) {
+    }else if(userData.o_font==1) {
       font = 'Med';
-    }else if(userData.font_size==2) {
+    }else if(userData.o_font==2) {
       font = 'Large';
     }
     setSizeClass(font);
