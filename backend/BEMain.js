@@ -37,7 +37,7 @@ exports.main = function(req, res) {
     var result;
     const dbm = await getPostgresClient();
     const sql = 'SELECT TDL.GROUP_NO,TDL.NAME,COALESCE(TDLH.CNT, 0) AS CNT,TDL.COLOR AS COLOR,TDL.SORT AS SORT FROM TO_DO_LIST TDL LEFT JOIN ('
-              + 'SELECT GROUP_NO,COUNT(*) AS CNT FROM TO_DO_LIST_HED GROUP BY GROUP_NO'
+              + 'SELECT GROUP_NO,COUNT(*) AS CNT FROM TO_DO_LIST_HED WHERE USER_ID = $1 GROUP BY GROUP_NO'
               + ') TDLH ON TDL.GROUP_NO = TDLH.GROUP_NO WHERE TDL.USER_ID = $1 ORDER BY TDL.SORT';
     try {
       result = await dbm.execute(sql, params);

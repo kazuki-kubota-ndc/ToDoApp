@@ -667,12 +667,17 @@ function TodoItem({ item, isMain, mainUpdate, mainDelete, sizeClass }) {
     background: '#'+item.color,
     height: '20px',
     width: '20px',
+    
+  }
+
+  const center = {
+    alignItems: 'center',
   }
 
   return (
     <div className={classNames("panel-bloc", "columns")} style={ style }>
       <div id="list_div" className={classNames("column", "is-10", "pad5mar0")} onClick={onListClick} style={ style2 }>
-      <div className={"dispFlex"}>
+      <div className={"dispFlex"} style={center}>
         <div style={colorBoxStyle}></div>
         <div className={"width5"}></div>
         <div>
