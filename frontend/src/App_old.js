@@ -10,12 +10,12 @@ import '@fortawesome/fontawesome-free/js/regular';
 
 import 'bulma/css/bulma.min.css';
 
-import LoginModal from './MapLoginModal';
-import AddUserModal from './MapAddUserModal';
+import LoginModal from './LoginModal';
+import AddUserModal from './AddUserModal';
 
 
 /* メイン画面 */
-function Login( defaultPosition, defaultZoomLevel ) {
+function Login() {
 
   /* ユーザーデータ */
   const [user, setUser] = React.useState({});
@@ -33,15 +33,6 @@ function Login( defaultPosition, defaultZoomLevel ) {
   const [innerHeight, setInnerHeight] = React.useState('');
 
   const history = useHistory();
-
-  const [position, setPosition] = useState({ latitude: null, longitude: null });
-
-  if(navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(position => {
-      const { latitude, longitude } = position.coords;
-      setPosition({ latitude, longitude });
-    });
-  }
 
 /* --------------------LoginModal-------------------- */
 
@@ -98,7 +89,7 @@ function Login( defaultPosition, defaultZoomLevel ) {
 
     if(addUserData.action=='login') {
 
-      fetch('/map_insert_user'+sendData)
+      fetch('/insert_user'+sendData)
         .then((res) => res.json())
         .then(
           (data) => {
@@ -120,14 +111,13 @@ function Login( defaultPosition, defaultZoomLevel ) {
 
   /* ログイン処理実行 */
   const login = (login_id, pass) => {
-
-    fetch('/map_login?login_id='+login_id+'&pass='+pass)
+    fetch('/login?login_id='+login_id+'&pass='+pass)
       .then((res) => res.json())
       .then(
         (data) => {
           /* ログイン */
           if(data.result===1) {
-            history.push({ pathname: '/', state: { user: data.data[0], defaultPosition: defaultPosition }});
+            history.push({ pathname: '/Main', state: { user: data.data[0] }});
             setLoading(false);
           /* ユーザー情報無し */
           }else if(data.result===2) {
@@ -158,8 +148,6 @@ function Login( defaultPosition, defaultZoomLevel ) {
         modalOpen={loginOpen}
         modalClose={loginClose}
         addUser={addUserBtn}
-        defaultPosition={defaultPosition}
-        defaultZoomLevel={defaultZoomLevel}
       />
       {/* AddUserモーダル */}
       <AddUserModal
@@ -214,27 +202,14 @@ function Loader({ isLoading }) {
 }
 
 /* 初期処理 */
-function MapApp() {
+function App() {
   const location = useLocation();
-  const [position, setPosition] = useState({ latitude: 34.732938, longitude: 135.498543 });
-  const [zoomLevel, setZoomLevel] = useState(18);
-
-  useEffect(() =>{
-
-    /* 位置情報 */
-    if(location.state!=null) {
-      if(location.state.defaultPosition!=null) {
-        setPosition(location.state.defaultPosition);
-        setZoomLevel(location.state.defaultZoomLevel);
-      }
-    }
-  },[]);
 
   return (
     <div class="container is-fluid">
-      <Login defaultPosition={ position } defaultZoomLevel={ zoomLevel } />
+      <Login />
     </div>
   );
 }
 
-export default MapApp;
+export default App;

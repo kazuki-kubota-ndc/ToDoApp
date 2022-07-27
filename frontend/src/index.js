@@ -5,7 +5,6 @@ import './index.css';
 import App from './App';
 import Main from './Main';
 import MapApp from './MapApp';
-import MapMain from './MapMain';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -14,7 +13,6 @@ ReactDOM.render(
         <Route exact path="/" component={App} />
         <Route exact path="/Main" component={Main} />
         <Route exact path="/MapLogin" component={MapApp} />
-        <Route exact path="/MapMain" component={MapMain} />
       </Switch>
     </BrowserRouter>
   </React.StrictMode>,

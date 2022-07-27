@@ -55,7 +55,7 @@ const CenterModal = ({ showModal, modalOpen, modalClose, addUser, defaultPositio
         (data) => {
           /* ログイン */
           if(data.result===1) {
-            history.push({ pathname: '/MapMain', state: { user: data.data[0], defaultPosition: defaultPosition }});
+            history.push({ pathname: '/', state: { user: data.data[0], defaultPosition: defaultPosition }});
           /* ユーザー情報無し */
           }else if(data.result===2) {
             alert('ユーザーID、パスワードが正しくありません。');
@@ -81,7 +81,7 @@ const CenterModal = ({ showModal, modalOpen, modalClose, addUser, defaultPositio
 
   const backMain = () =>{
     if(!loading) {
-      history.push({ pathname: '/MapMain', state: { defaultPosition: defaultPosition } });
+      history.push({ pathname: '/', state: { defaultPosition: defaultPosition } });
     }
   }
 
