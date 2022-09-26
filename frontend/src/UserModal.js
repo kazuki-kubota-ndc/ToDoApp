@@ -139,7 +139,7 @@ const UserModal = ({ showModal, modalOpen, modalClose, user, setUser, setUpdateU
   }, [user]);
 
   /* モーダルのスタイル */
-  const modalStyle : ReactModal.Styles = {
+  const modalStyle = {
     content: {
       top: '50%',
       left: '50%',

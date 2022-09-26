@@ -67,7 +67,7 @@ const MenuModal = ({
   }
 
   /* モーダルのスタイル */
-  const modalStyle : ReactModal.Styles = {
+  const modalStyle = {
     content: {
       position: 'absolute',
       top: '0px',

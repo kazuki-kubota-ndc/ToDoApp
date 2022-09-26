@@ -167,7 +167,7 @@ const AddUserModal = ({showModal, modalOpen, modalClose, modalData, setModalData
   }
 
   /* モーダルのスタイル */
-  const modalStyle : ReactModal.Styles = {
+  const modalStyle = {
     content: {
       position: 'absolute',
       top: modal_top,

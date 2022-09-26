@@ -4,7 +4,6 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import './index.css';
 import App from './App';
 import Main from './Main';
-import MapApp from './MapApp';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -12,7 +11,6 @@ ReactDOM.render(
       <Switch>
         <Route exact path="/" component={App} />
         <Route exact path="/Main" component={Main} />
-        <Route exact path="/MapLogin" component={MapApp} />
       </Switch>
     </BrowserRouter>
   </React.StrictMode>,

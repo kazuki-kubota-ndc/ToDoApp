@@ -90,7 +90,7 @@ const UserEditModal = ({ showModal, modalOpen, modalClose, userItems, setUserIte
   }
 
   /* モーダルのスタイル */
-  const modalStyle : ReactModal.Styles = {
+  const modalStyle = {
     content: {
       top: '0%',
       left: '0%',

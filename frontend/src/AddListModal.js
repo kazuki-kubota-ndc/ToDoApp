@@ -127,7 +127,7 @@ const AddListModal = ({
   }
 
   /* モーダルのスタイル */
-  const modalStyle : ReactModal.Styles = {
+  const modalStyle = {
     content: {
       position: 'absolute',
       top: modal_top,

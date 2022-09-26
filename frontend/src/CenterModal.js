@@ -6,7 +6,7 @@ import ReactModal from 'react-modal';
 const CenterModal = ({showModal, modalOpen, modalClose, modalData, onClickOk, onClickClose, sizeClass }) => {
 
   /* モーダルのスタイル */
-  const modalStyle : ReactModal.Styles = {
+  const modalStyle = {
     content: {
       top: '50%',
       left: '50%',

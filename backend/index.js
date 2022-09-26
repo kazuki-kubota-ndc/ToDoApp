@@ -13,13 +13,6 @@ const UserEdit = require('./BEUserEdit');
 const AddUser = require('./BEAddUser');
 const Task = require('./BETask');
 
-const MapMain = require('./BEMapMain');
-const MapUser = require('./BEMapUser');
-const MapPass = require('./BEMapPass');
-const MapLoginModal = require('./BEMapLoginModal');
-const MapUserEdit = require('./BEMapUserEdit');
-const MapAddUser = require('./BEMapAddUser');
-
 app.use(express.static(path.join(__dirname, '../frontend/build')));
 // リクエストボディをjsonに変換する
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -28,8 +21,6 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => {
   res.send('Hello World!')
 });
-
-/* ToDOList */
 
 /* -------------------- Main.js -------------------- */
 app.get("/select_list", Main.select_list);
@@ -101,71 +92,6 @@ app.get("/select_task", Task.select_task);
 app.get("/select_sub", Task.select_sub);
 
 app.get("/delete_sub", Task.delete_sub);
-
-
-/* ここまでToDOList */
-
-/* Mapmaker */
-
-/* -------------------- MapMain.js -------------------- */
-app.get("/select_marker", MapMain.select_marker);
-
-app.get("/insert_marker", MapMain.insert_marker);
-
-app.get("/update_marker", MapMain.update_marker);
-
-app.get("/delete_marker", MapMain.delete_marker);
-
-app.post("/update_tagging", MapMain.update_tagging);
-
-app.post("/insert_tag", MapMain.insert_tag);
-
-app.post("/update_tag", MapMain.update_tag);
-
-app.get("/delete_tag", MapMain.delete_tag);
-
-app.get("/marker_list_reset", MapMain.marker_list_reset);
-
-
-
-/* -------------------- MapLoginModal.js -------------------- */
-app.get("/map_login", MapLoginModal.map_login);
-
-
-
-/* -------------------- MapUserModal.js -------------------- */
-app.get("/map_update_login_id", MapUser.map_update_login_id);
-
-app.get("/map_update_user_name", MapUser.map_update_user_name);
-
-app.get("/map_update_admin", MapUser.map_update_admin);
-
-app.get("/map_update_size", MapUser.map_update_size);
-
-app.get("/map_delete_user", MapUser.map_delete_user);
-
-
-
-/* -------------------- PassModal.js -------------------- */
-app.get("/map_update_pass", MapPass.map_update_pass);
-
-
-
-/* -------------------- MapAddUserModal.js -------------------- */
-app.get("/map_insert_user", MapAddUser.map_insert_user);
-
-app.get("/map_update_user", MapAddUser.map_update_user);
-
-app.get("/map_select_pass", MapAddUser.map_select_pass);
-
-/* -------------------- MapUserEditModal.js -------------------- */
-app.get("/map_select_user", MapUserEdit.map_select_user);
-
-
-
-/* ここまでMapmaker */
-
-
 
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname,'../frontend/build/index.html'));

@@ -160,7 +160,7 @@ const TaskModal = ({ showModal, modalOpen, modalClose, modalData, setModalData, 
   }
 
   /* モーダルのスタイル */
-  const modalStyle : ReactModal.Styles = {
+  const modalStyle = {
     content: {
       top: '0%',
       left: '0%',

@@ -69,7 +69,7 @@ const CenterModal = ({ showModal, modalOpen, modalClose, addUser }) => {
   }
 
   /* モーダルのスタイル */
-  const modalStyle : ReactModal.Styles = {
+  const modalStyle = {
     content: {
       top: '50%',
       left: '50%',

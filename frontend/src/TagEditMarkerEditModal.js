@@ -164,7 +164,7 @@ const TagEditMarkerEditModal = ({ showModal, modalOpen, modalClose, modalData, m
   }
 
   /* モーダルのスタイル */
-  const modalStyle : ReactModal.Styles = {
+  const modalStyle = {
     content: {
       top: '0%',
       left: '0%',

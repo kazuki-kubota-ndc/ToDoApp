@@ -133,7 +133,7 @@ const TagSelectModal = ({ showModal, modalOpen, modalClose, user, loadingTagSele
   }, [tagListData]);
 
   /* モーダルのスタイル */
-  const modalStyle : ReactModal.Styles = {
+  const modalStyle = {
     content: {
       top: '50%',
       left: '50%',

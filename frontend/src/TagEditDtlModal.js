@@ -159,7 +159,7 @@ const TagEditDtlModal = ({ showModal, modalOpen, modalClose, modalData, tagEditD
   }
 
   /* モーダルのスタイル */
-  const modalStyle : ReactModal.Styles = {
+  const modalStyle = {
     content: {
       top: '50%',
       left: '50%',
