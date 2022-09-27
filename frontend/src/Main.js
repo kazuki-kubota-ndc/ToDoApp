@@ -40,7 +40,7 @@ import UserEditModal from './UserEditModal';
 
 
 /* メイン画面 */
-function Login({ userData, array, listArray }) {
+export const Login = ({ userData, array, listArray }) => {
 
   /* ユーザーデータ */
   const [user, setUser] = React.useState({});
@@ -1005,7 +1005,7 @@ function Login({ userData, array, listArray }) {
         <div className={classNames("panel-heading")}>
           <table className={"width100P"}>
             <tr>
-              <td className={classNames("width10P")} onClick={openMenu}>
+              <td role="menu_btn" className={classNames("width10P")} onClick={openMenu}>
                 <IconContext.Provider value={{ size: menu_size, style: { cursor: 'pointer'} }}>
                   <AiOutlineMenu />
                 </IconContext.Provider>
