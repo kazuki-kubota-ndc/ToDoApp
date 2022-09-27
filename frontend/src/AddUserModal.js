@@ -209,10 +209,11 @@ const AddUserModal = ({showModal, modalOpen, modalClose, modalData, setModalData
       {isDisp &&
         <div className={classNames("addModal")}>
           <div>
-            <span className={"labelFont"+sizeClass}>ユーザーID</span>
+            <label htmlFor="user_id" className={"labelFont"+sizeClass}>ユーザーID</label>
           </div>
           <div>
             <input
+              id="user_id"
               class="input"
               className={classNames("noBorderInput", "title"+sizeClass, "cursorPointer")}
               type="text"
@@ -222,10 +223,11 @@ const AddUserModal = ({showModal, modalOpen, modalClose, modalData, setModalData
             />
           </div>
           <div>
-            <span className={"labelFont"+sizeClass}>ユーザー名</span>
+            <label htmlFor="user_name" className={"labelFont"+sizeClass}>ユーザー名</label>
           </div>
           <div>
             <input
+              id="user_name"
               class="input"
               className={classNames("noBorderInput", "title"+sizeClass, "cursorPointer")}
               type="text"
@@ -235,10 +237,11 @@ const AddUserModal = ({showModal, modalOpen, modalClose, modalData, setModalData
             />
           </div>
           <div>
-            <span className={"labelFont"+sizeClass}>パスワード</span>
+            <label htmlFor="user_password" className={"labelFont"+sizeClass}>パスワード</label>
           </div>
           <div>
             <input
+              id="user_password"
               class="input"
               className={classNames("noBorderInput", "title"+sizeClass, "cursorPointer")}
               type="password"

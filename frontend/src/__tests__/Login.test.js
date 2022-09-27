@@ -1,14 +1,10 @@
 import React,{ useState,useEffect,Component } from 'react';
 import { useHistory,useLocation,Router } from 'react-router-dom';
-import classNames from 'classnames';
-import ReactModal from 'react-modal';
 import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom/extend-expect';
-import App from '../App';
 import Main, { Login } from '../Main';
 import LoginModal from '../LoginModal';
-import MenuModal from '../MenuModal';
 import fetchMock from 'fetch-mock';
 import { createMemoryHistory } from 'history'
 
