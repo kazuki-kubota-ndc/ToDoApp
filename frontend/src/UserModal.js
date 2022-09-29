@@ -169,6 +169,7 @@ const UserModal = ({ showModal, modalOpen, modalClose, user, setUser, setUpdateU
       onAfterOpen={modalOpenBefore}
       style={modalStyle}
       contentLabel="Settings"
+      ariaHideApp={false}
     >
       <div>
         <div className={"panel"}>
@@ -193,10 +194,11 @@ const UserModal = ({ showModal, modalOpen, modalClose, user, setUser, setUpdateU
           {/* メイン */}
           <div className={"mar20"}>
             <div>
-              <span className={"labelFont"+sizeClass}>ユーザーID</span>
+              <label htmlFor="user_id" className={"labelFont"+sizeClass}>ユーザーID</label>
             </div>
             <div>
               <InputText
+                id={"user_id"}
                 textValue={userId}
                 textChange={setUserId}
                 motoText={user.login_id}
@@ -205,10 +207,11 @@ const UserModal = ({ showModal, modalOpen, modalClose, user, setUser, setUpdateU
               />
             </div>
             <div>
-              <span className={"labelFont"+sizeClass}>ユーザー名</span>
+              <label htmlFor="user_name" className={"labelFont"+sizeClass}>ユーザー名</label>
             </div>
             <div>
               <InputText
+                id={"user_name"}
                 textValue={userName}
                 textChange={setUserName}
                 motoText={user.user_name}
@@ -226,21 +229,21 @@ const UserModal = ({ showModal, modalOpen, modalClose, user, setUser, setUpdateU
               </span>
             </div>
             <div>
-              <span className={"labelFont"+sizeClass}>権限</span>
+              <label htmlFor="admin" className={"labelFont"+sizeClass}>権限</label>
             </div>
             <div>
               <span className={classNames("pad0marR5", "select", "is-round", select_size)}>
-                <select defaultValue={user.admin} onChange={onChangeAdmin}>
+                <select id="admin" defaultValue={user.admin} onChange={onChangeAdmin}>
                   {user.admin=='1' ? <option value="1">管理者</option> : <option value="0">ユーザー</option>}
                 </select>
               </span>
             </div>
             <div>
-              <span className={"labelFont"+sizeClass}>文字サイズ</span>
+              <label htmlFor="font_size" className={"labelFont"+sizeClass}>文字サイズ</label>
             </div>
             <div>
               <span className={classNames("pad0marR5", "select", "is-round", select_size)}>
-                <select defaultValue={user.o_font} onChange={onChangeSize}>
+                <select id="font_size" defaultValue={user.o_font} onChange={onChangeSize}>
                   <option value="2">大</option>
                   <option value="1">中</option>
                   <option value="0">小</option>
@@ -282,7 +285,7 @@ function LoaderUser({ isLoading }) {
   }
 }
 
-function InputText({ textValue, textChange, motoText, updateData, sizeClass }) {
+function InputText({ id, textValue, textChange, motoText, updateData, sizeClass }) {
 
   const onChangeInput = e =>{
     textChange(e.target.value);
@@ -329,6 +332,7 @@ function InputText({ textValue, textChange, motoText, updateData, sizeClass }) {
   return (
     <span>
       <input
+        id={id}
         class="input"
         className={classNames("noBorderInputUser", "title"+sizeClass, "cursorPointer")}
         type="text"

@@ -2,7 +2,6 @@ import React,{ useState,useEffect,Component } from 'react';
 import { useHistory,useLocation,Router } from 'react-router-dom';
 import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import '@testing-library/jest-dom/extend-expect';
 import App, { Login } from '../App';
 import AddUserModal from '../AddUserModal';
 import fetchMock from 'fetch-mock';
