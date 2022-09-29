@@ -114,6 +114,7 @@ const UserEditModal = ({ showModal, modalOpen, modalClose, userItems, setUserIte
       onRequestClose={closeModal}
       style={modalStyle}
       contentLabel="Settings"
+      ariaHideApp={false}
     >
       <div className={"panel"}>
         {/* ヘッダー */}
@@ -182,7 +183,7 @@ const UserEditModal = ({ showModal, modalOpen, modalClose, userItems, setUserIte
                     </span>
                   </td>
                   <td>
-                    <span className={"pad0marR10"} onClick={() => onClickEditUserBtn(item)}>
+                    <span role={item.login_id+"_edit_btn"} className={"pad0marR10"} onClick={() => onClickEditUserBtn(item)}>
                       <IconContext.Provider value={{ size: edit_size, style: { cursor: 'pointer'} }}>
                         <FiEdit />
                       </IconContext.Provider>
@@ -190,7 +191,7 @@ const UserEditModal = ({ showModal, modalOpen, modalClose, userItems, setUserIte
                   </td>
                   <td>
                     {item.admin!=1 &&
-                      <span onClick={() => onClickDelUserBtn(item.user_id, item.login_id, item.user_name)}>
+                      <span role={item.login_id+"_delete_btn"} onClick={() => onClickDelUserBtn(item.user_id, item.login_id, item.user_name)}>
                         <IconContext.Provider value={{ size: delete_size, style: { cursor: 'pointer'} }}>
                           <AiOutlineCloseCircle />
                         </IconContext.Provider>

@@ -96,6 +96,7 @@ const MenuModal = ({
       onRequestClose={modalClose}
       style={modalStyle}
       contentLabel="Settings"
+      ariaHideApp={false}
       
       overlayClassName={{
         base: "overlay-base",

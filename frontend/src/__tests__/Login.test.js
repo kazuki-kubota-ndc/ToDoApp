@@ -468,5 +468,6 @@ describe('ログアウト実行時のテスト', () => {
     await waitFor(() => 
       expect(history.location.pathname).toBe('/')
     );
+    fetchMock.restore();
   });
 });

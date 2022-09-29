@@ -101,7 +101,7 @@ describe('新規登録実行時のテスト', () => {
         innerHeight={innerHeight}
       />
     );
-    /* inputのvalueを空に変更 */
+    /* inputのvalueを変更 */
     await userEvent.type(screen.getByLabelText('ユーザーID'), 'add_user_id');
     await userEvent.type(screen.getByLabelText('ユーザー名'), 'add_user_name');
     await userEvent.type(screen.getByLabelText('パスワード'), '');
