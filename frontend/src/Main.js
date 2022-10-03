@@ -1115,7 +1115,7 @@ function ToDoList({ item, taskData, setTaskData, openTask, listDel, listEdit, si
     <div className={classNames("listBox", "cursorPointer")} onClick={onClickList}>
       <table className={"width100P"}>
         <tr>
-          <td style={labelColor} className={"taskLabel"}>
+          <td role={list_name+'_labelcolor'} style={labelColor} className={"taskLabel"}>
             <span>
               <IconContext.Provider value={{ size: '24px'}}>
                 <VscTasklist />
@@ -1131,12 +1131,12 @@ function ToDoList({ item, taskData, setTaskData, openTask, listDel, listEdit, si
                   <span className={classNames("titleMod"+sizeClass)}>[ {item.task_cnt} ]</span>
                 </td>
                 <td align="right" className={classNames("width25P")}>
-                  <span className={classNames("pad0marR20")} onClick={onClickEdit}>
+                  <span role={list_name+'_edit_btn'} className={classNames("pad0marR20")} onClick={onClickEdit}>
                     <IconContext.Provider value={{ size: edit_close_size, style: { cursor: 'pointer'} }}>
                       <FiEdit />
                     </IconContext.Provider>
                   </span>
-                  <span onClick={onClickDel}>
+                  <span role={list_name+'_delete_btn'} onClick={onClickDel}>
                     <IconContext.Provider value={{ size: edit_close_size, style: { cursor: 'pointer'} }}>
                       <AiOutlineCloseCircle />
                     </IconContext.Provider>

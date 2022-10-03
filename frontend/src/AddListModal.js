@@ -177,7 +177,7 @@ const AddListModal = ({
       {isDisp &&
         <div className={classNames("addModal")}>
           <div>
-            <span className={"labelFont"+sizeClass}>リスト名</span>
+            <label htmlFor="list_name" className={"labelFont"+sizeClass}>リスト名</label>
           </div>
           <div>
             <input
@@ -194,20 +194,20 @@ const AddListModal = ({
             <span className={"labelFont"+sizeClass}>カラー</span>
           </div>
           <div>
-            <p className={classNames("pad0marR40", circle_class, "cursorPointer")} style={colorStyle} onClick={onClickColor}></p>
+            <p role="new_color" className={classNames("pad0marR40", circle_class, "cursorPointer")} style={colorStyle} onClick={onClickColor}></p>
             <span style={colorPickStyle}>
-              {pickerColor!='#8b4513' && <p className={classNames("pad0marR5", circle_class, "cursorPointer", "saddlebrown")} onClick={() => onSelectColor('#8b4513')}></p> }
-              {pickerColor!='#ff0000' && <p className={classNames("pad0marR5", circle_class, "cursorPointer", "red")} onClick={() => onSelectColor('#ff0000')}></p> }
-              {pickerColor!='#ff69b4' && <p className={classNames("pad0marR5", circle_class, "cursorPointer", "hotpink")} onClick={() => onSelectColor('#ff69b4')}></p> }
-              {pickerColor!='#dcdcdc' && <p className={classNames("pad0marR5", circle_class, "cursorPointer", "gainsboro")} onClick={() => onSelectColor('#dcdcdc')}></p> }
-              {pickerColor!='#ff7f50' && <p className={classNames("pad0marR5", circle_class, "cursorPointer", "coral")} onClick={() => onSelectColor('#ff7f50')}></p> }
-              {pickerColor!='#ffff00' && <p className={classNames("pad0marR5", circle_class, "cursorPointer", "yellow")} onClick={() => onSelectColor('#ffff00')}></p> }
-              {pickerColor!='#adff2f' && <p className={classNames("pad0marR5", circle_class, "cursorPointer", "greenyellow")} onClick={() => onSelectColor('#adff2f')}></p> }
-              {pickerColor!='#008000' && <p className={classNames("pad0marR5", circle_class, "cursorPointer", "green")} onClick={() => onSelectColor('#008000')}></p> }
-              {pickerColor!='#00ffff' && <p className={classNames("pad0marR5", circle_class, "cursorPointer", "aqua")} onClick={() => onSelectColor('#00ffff')}></p> }
-              {pickerColor!='#0000ff' && <p className={classNames("pad0marR5", circle_class, "cursorPointer", "blue")} onClick={() => onSelectColor('#0000ff')}></p> }
-              {pickerColor!='#191970' && <p className={classNames("pad0marR5", circle_class, "cursorPointer", "midnightblue")} onClick={() => onSelectColor('#191970')}></p> }
-              {pickerColor!='#ee82ee' && <p className={classNames("pad0marR5", circle_class, "cursorPointer", "violet")} onClick={() => onSelectColor('#ee82ee')}></p> }
+              {pickerColor!='#8b4513' && <p role="saddlebrown" className={classNames("pad0marR5", circle_class, "cursorPointer", "saddlebrown")} onClick={() => onSelectColor('#8b4513')}></p> }
+              {pickerColor!='#ff0000' && <p role="red" className={classNames("pad0marR5", circle_class, "cursorPointer", "red")} onClick={() => onSelectColor('#ff0000')}></p> }
+              {pickerColor!='#ff69b4' && <p role="hotpink" className={classNames("pad0marR5", circle_class, "cursorPointer", "hotpink")} onClick={() => onSelectColor('#ff69b4')}></p> }
+              {pickerColor!='#dcdcdc' && <p role="gainsboro" className={classNames("pad0marR5", circle_class, "cursorPointer", "gainsboro")} onClick={() => onSelectColor('#dcdcdc')}></p> }
+              {pickerColor!='#ff7f50' && <p role="coral" className={classNames("pad0marR5", circle_class, "cursorPointer", "coral")} onClick={() => onSelectColor('#ff7f50')}></p> }
+              {pickerColor!='#ffff00' && <p role="yellow" className={classNames("pad0marR5", circle_class, "cursorPointer", "yellow")} onClick={() => onSelectColor('#ffff00')}></p> }
+              {pickerColor!='#adff2f' && <p role="greenyellow" className={classNames("pad0marR5", circle_class, "cursorPointer", "greenyellow")} onClick={() => onSelectColor('#adff2f')}></p> }
+              {pickerColor!='#008000' && <p role="green" className={classNames("pad0marR5", circle_class, "cursorPointer", "green")} onClick={() => onSelectColor('#008000')}></p> }
+              {pickerColor!='#00ffff' && <p role="aqua" className={classNames("pad0marR5", circle_class, "cursorPointer", "aqua")} onClick={() => onSelectColor('#00ffff')}></p> }
+              {pickerColor!='#0000ff' && <p role="blue" className={classNames("pad0marR5", circle_class, "cursorPointer", "blue")} onClick={() => onSelectColor('#0000ff')}></p> }
+              {pickerColor!='#191970' && <p role="midnightblue" className={classNames("pad0marR5", circle_class, "cursorPointer", "midnightblue")} onClick={() => onSelectColor('#191970')}></p> }
+              {pickerColor!='#ee82ee' && <p role="violet" className={classNames("pad0marR5", circle_class, "cursorPointer", "violet")} onClick={() => onSelectColor('#ee82ee')}></p> }
             </span>
           </div>
 
