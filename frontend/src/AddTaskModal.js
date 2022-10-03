@@ -292,10 +292,11 @@ const AddTaskModal = ({
       {isDisp &&
         <div className={classNames("addModal")}>
           <div>
-            <span className={"labelFont"+sizeClass}>タスク名</span>
+            <label htmlFor="task_name" className={"labelFont"+sizeClass}>タスク名</label>
           </div>
           <div>
             <input
+              id="task_name"
               class="input"
               className={classNames("noBorderInput", "title"+sizeClass, "cursorPointer")}
               type="text"
@@ -392,10 +393,11 @@ const AddTaskModal = ({
 
           <div>
             <div>
-              <span className={"labelFont"+sizeClass}>詳細</span>
+              <label htmlFor='dtl' className={"labelFont"+sizeClass}>詳細</label>
             </div>
             <div>
               <textarea
+                id="dtl"
                 className={classNames("noBorderTextarea", "titleMod"+sizeClass, "cursorPointer")}
                 defaultValue={inputDtl}
                 onChange={changeDtl}

@@ -507,7 +507,7 @@ function ToDoTask({ taskData, modalData, isDisplay, onClickComment, onClickComme
     <div style={dispStyle} className={classNames("taskBox")}>
       <table className={"width100P"}>
         <tr>
-          <td style={taskStyle} className={"taskLabel"}>
+          <td role={task_name+'_labelcolor_task'} style={taskStyle} className={"taskLabel"}>
               <IconContext.Provider value={{ size: '24px'}}>
                 <MdOutlineTaskAlt />
               </IconContext.Provider>
@@ -519,17 +519,17 @@ function ToDoTask({ taskData, modalData, isDisplay, onClickComment, onClickComme
                 <tr>
                   <td className={classNames("width80P")}>
                     <span className={classNames("titleMod"+sizeClass)}>
-                      <b>{task_name}</b>
+                      <b role={task_name+'_task_name'}>{task_name}</b>
                     </span>
                   </td>
                   <td className={classNames("width20P")}>
                     <span className={"flexboxRight"}>
-                      <span className={classNames("pad0marR20")} onClick={() => onClickEdit(taskData)}>
+                      <span role={task_name+'_edit_btn_task'} className={classNames("pad0marR20")} onClick={() => onClickEdit(taskData)}>
                         <IconContext.Provider value={{ size: edit_close_size, style: { cursor: 'pointer'} }}>
                           <FiEdit />
                         </IconContext.Provider>
                       </span>
-                      <span onClick={() => onClickDel(taskData.task,taskData.task_name)}>
+                      <span role={task_name+'_delete_btn_task'} onClick={() => onClickDel(taskData.task,taskData.task_name)}>
                         <IconContext.Provider value={{ size: edit_close_size, style: { cursor: 'pointer'} }}>
                           <AiOutlineCloseCircle />
                         </IconContext.Provider>
@@ -683,7 +683,7 @@ function Dtl({ dtl_str, sizeClass }) {
   return (
     <span className={classNames("medText"+sizeClass)}>
       {dtl_names.map(dtl => (
-        <div>{dtl}</div>
+        <div role={dtl+"_dtl"}>{dtl}</div>
       ))}
     </span>
   );

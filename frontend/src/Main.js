@@ -1112,7 +1112,7 @@ function ToDoList({ item, taskData, setTaskData, openTask, listDel, listEdit, si
   }
 
   return (
-    <div className={classNames("listBox", "cursorPointer")} onClick={onClickList}>
+    <div role={list_name+'_opentask'} className={classNames("listBox", "cursorPointer")} onClick={onClickList}>
       <table className={"width100P"}>
         <tr>
           <td role={list_name+'_labelcolor'} style={labelColor} className={"taskLabel"}>
