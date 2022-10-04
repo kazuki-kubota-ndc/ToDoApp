@@ -125,10 +125,11 @@ const AddCommentModal = ({
     >
       <div className={classNames("addModal")}>
         <div>
-          <span className={"labelFont"+sizeClass}>コメント</span>
+          <label htmlFor="comment" className={"labelFont"+sizeClass}>コメント</label>
         </div>
         <div>
           <input
+            id="comment"
             class="input"
             className={classNames("noBorderInput", "title"+sizeClass, "cursorPointer")}
             type="text"

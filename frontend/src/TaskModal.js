@@ -573,7 +573,7 @@ function ToDoTask({ taskData, modalData, isDisplay, onClickComment, onClickComme
                   sizeClass={sizeClass}
                 />
               </span>
-              <span className={classNames("pad0marR5", "cursorPointer")} onClick={() => searchComment('0')}>
+              <span role={task_name+'_searchcomment'} className={classNames("pad0marR5", "cursorPointer")} onClick={() => searchComment('0')}>
                 <IconContext.Provider value={{ size: com_size, style: { cursor: 'pointer'} }}>
                   <FaRegComment />
                 </IconContext.Provider>
@@ -581,7 +581,7 @@ function ToDoTask({ taskData, modalData, isDisplay, onClickComment, onClickComme
               <span className={classNames("pad0marR10", "cursorPointer", "titleMod"+sizeClass)} onClick={() => searchComment('0')}>
                 {taskData.sub_cnt}
               </span>
-              <span onClick={() => searchComment('1')}>
+              <span role={task_name+'_searchcomment_add'} onClick={() => searchComment('1')}>
                 <IconContext.Provider value={{ size: add_size, style: { cursor: 'pointer'} }}>
                   <MdOutlineAdd />
                 </IconContext.Provider>
@@ -727,13 +727,13 @@ function CommentList({ subData, delComment, sizeClass, onClickEditComment }) {
       <span className={"pad0marR20"}></span>
       <span className={"pad0marR20"}></span>
       <span className={"pad0marR20"}></span>
-      <span className={"pad0marR80"}>{sub_name}</span>
-      <span className={classNames("pad0marR20")} onClick={() => onClickEditComment(subData)}>
+      <span role={sub_name+'_sub_name'} className={"pad0marR80"}>{sub_name}</span>
+      <span role={sub_name+'_edit'} className={classNames("pad0marR20")} onClick={() => onClickEditComment(subData)}>
         <IconContext.Provider value={{ size: '20px', style: { cursor: 'pointer'} }}>
           <FiEdit />
         </IconContext.Provider>
       </span>
-      <span onClick={onClickDelComment}>
+      <span role={sub_name+'_delete'} onClick={onClickDelComment}>
         <IconContext.Provider value={{ size: '20px', style: { cursor: 'pointer'} }}>
           <AiOutlineCloseCircle />
         </IconContext.Provider>
