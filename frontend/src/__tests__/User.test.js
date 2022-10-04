@@ -10,6 +10,10 @@ import { createMemoryHistory } from 'history'
 beforeAll(() => {
     window.alert = jest.fn();
   });
+afterEach(() => {
+  /* fetchMockをリセット */
+  fetchMock.restore();
+});
 
 describe('アカウント情報画面、初期表示のテスト', () => {
   test('アカウント情報初期表示テスト', async () => {
@@ -156,7 +160,6 @@ describe('アカウント情報画面、変更処理のテスト', () => {
     
         /* ユーザーID変更処理が呼ばれて、valueがtest_login_id_changeに変更されているのを確認 */
         expect(await screen.queryByLabelText('ユーザーID').value).toBe('test_login_id_change');
-        fetchMock.restore();
     });
     test('ユーザー名を空にした時のエラーメッセージの確認テスト', async () => {
         /* ダミーで定義するだけ */
@@ -253,7 +256,6 @@ describe('アカウント情報画面、変更処理のテスト', () => {
         
         /* ユーザー名変更処理が呼ばれて、valueがtest_user_name_changeに変更されているのを確認 */
         expect(await screen.queryByLabelText('ユーザー名').value).toBe('test_user_name_change');
-        fetchMock.restore();
     });
     test('文字サイズ変処理のテスト', async () => {
         /* ダミーで定義するだけ */
@@ -301,6 +303,5 @@ describe('アカウント情報画面、変更処理のテスト', () => {
         await new Promise((res) => setTimeout(res, 1000));
         /* setSizeClassが引数"Large"で呼ばれたのを確認する */
         expect(mockFuncSetSizeClass.mock.calls[0]).toEqual(["Large"]);
-        fetchMock.restore();
     });
 });

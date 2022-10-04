@@ -10,6 +10,10 @@ import { createMemoryHistory } from 'history'
 beforeAll(() => {
     window.alert = jest.fn();
   });
+afterEach(() => {
+  /* fetchMockをリセット */
+  fetchMock.restore();
+});
 
 describe('新規登録実行時のテスト', () => {
   test('ユーザーIDが空の時のエラー表示テスト', async () => {

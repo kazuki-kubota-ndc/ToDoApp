@@ -8,8 +8,12 @@ import fetchMock from 'fetch-mock';
 import { createMemoryHistory } from 'history'
 
 beforeAll(() => {
-    window.alert = jest.fn();
-  });
+  window.alert = jest.fn();
+});
+afterEach(() => {
+  /* fetchMockをリセット */
+  fetchMock.restore();
+});
 
 describe('ユーザー管理画面、初期表示のテスト', () => {
   test('ユーザー管理画面初期表示テスト', async () => {
@@ -175,8 +179,6 @@ describe('ユーザー管理画面、ユーザー追加処理のテスト', () =
     /* 追加したユーザーIDとユーザー名が表示されているか確認 */
     expect(await screen.findByText('NEW_USERID')).toBeInTheDocument();
     expect(await screen.findByText('NEW_NAME')).toBeInTheDocument();
-
-    fetchMock.restore();
   });
 });
 describe('ユーザー管理画面、ユーザー編集処理のテスト', () => {
@@ -284,6 +286,5 @@ describe('ユーザー管理画面、ユーザー編集処理のテスト', () =
       /* 変更後のユーザーID、ユーザー名が表示されているのを確認 */
       expect(await screen.findByText('edit_id')).toBeInTheDocument();
       expect(await screen.findByText('edit_name')).toBeInTheDocument();
-      fetchMock.restore();
     });
   });

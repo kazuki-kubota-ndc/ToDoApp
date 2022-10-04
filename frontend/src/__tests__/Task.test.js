@@ -10,6 +10,10 @@ import { createMemoryHistory } from 'history'
 beforeAll(() => {
   window.alert = jest.fn();
 });
+afterEach(() => {
+  /* fetchMockをリセット */
+  fetchMock.restore();
+});
 
 describe('タスク画面、初期表示処理のテスト', () => {
   test('タスク画面初期表示テスト', async () => {
@@ -119,7 +123,6 @@ describe('タスク画面、初期表示処理のテスト', () => {
     expect(await screen.findByText('test_task')).toBeInTheDocument();
     /* カラーが適応されているか確認 */
     expect(await screen.findByRole('test_task_labelcolor_task')).toHaveStyle({background: 'rgb(238, 130, 238)'});
-    fetchMock.restore();
   });
 });
 describe('タスク画面、タスク追加処理のテスト', () => {
@@ -201,7 +204,6 @@ describe('タスク画面、タスク追加処理のテスト', () => {
     userEvent.click(await screen.findByRole('button', {name: '追加'}));
     /* アラートを確認 */
     expect(window.alert).toHaveBeenCalledWith('タスク名が入力されていません');
-    fetchMock.restore();
   });
   test('詳細に4行以上入力した時のエラーメッセージのテスト', async () => {
     const history = createMemoryHistory();
@@ -284,9 +286,8 @@ describe('タスク画面、タスク追加処理のテスト', () => {
     userEvent.click(await screen.findByRole('button', {name: '追加'}));
     /* アラートを確認 */
     expect(window.alert).toHaveBeenCalledWith('詳細が４行以上入力されています、３行以下に修正して下さい。');
-    fetchMock.restore();
   });
-  test('詳細に4行以上入力した時のエラーメッセージのテスト', async () => {
+  test('タスク追加処理実行のテスト', async () => {
     const history = createMemoryHistory();
   
     const testTaskDatas = [{
@@ -301,6 +302,15 @@ describe('タスク画面、タスク追加処理のテスト', () => {
       sub_cnt: 0,
     }];
   
+    const new_date = new Date();
+    const new_year = String(new_date.getFullYear());
+    const new_month = String(new_date.getMonth()+1);
+    const new_day = String(new_date.getDate());
+
+    const new_date_str = new_year + '/'
+    + (new_month.length==2 ? new_month : ('0'+new_month)) + '/'
+    + (new_day.length==2 ? new_day : ('0'+new_day));
+
     /* タスクモーダル呼び出し時のfetch(検索結果0を返す) */
     fetchMock
       .get('/select_task?user_id=test_user_id&list_no=0', {
@@ -310,7 +320,7 @@ describe('タスク画面、タスク追加処理のテスト', () => {
         result: 1,
         data: testTaskDatas
       })
-      .get('/insert_task?task_name=new_task&task_color=dcdcdc&task_dtl=new_dtl&task_date=2022/10/03&shime_time=12&shime_min=0&time_add_flg=0&task_check=0&list_no=1&user_id=test_user_id', {
+      .get('/insert_task?task_name=new_task&task_color=dcdcdc&task_dtl=new_dtl&task_date='+new_date_str+'&shime_time=12&shime_min=0&time_add_flg=0&task_check=0&list_no=1&user_id=test_user_id', {
         result: 1,
         task_no: 2
       });
@@ -372,7 +382,6 @@ describe('タスク画面、タスク追加処理のテスト', () => {
     /* タスクが追加されているのを確認 */
     const new_task = await screen.findByRole('new_task_task_name');
     expect(new_task.textContent).toBe('new_task');
-    fetchMock.restore();
   });
 });
 describe('タスク編集処理のテスト', () => {
@@ -454,7 +463,6 @@ describe('タスク編集処理のテスト', () => {
     /* 詳細が正常に表示されているのを確認 */
     const dtl = await screen.findByRole('test_dtl_dtl');
     expect(dtl.textContent).toBe('test_dtl');
-    fetchMock.restore();
   });
   test('タスク編集処理実行のテスト', async () => {
     const history = createMemoryHistory();
@@ -546,7 +554,6 @@ describe('タスク編集処理のテスト', () => {
     /* 詳細が変更されているのを確認 */
     const dtl = await screen.findByRole('edit_dtl_dtl');
     expect(dtl.textContent).toBe('edit_dtl');
-    fetchMock.restore();
   });
 });
 describe('タスク削除処理のテスト', () => {
@@ -589,7 +596,7 @@ describe('タスク削除処理のテスト', () => {
       })
       .get('/delete_task?user_id=test_user_id&list_no=1&task_no=1', {
         result: 1
-      })
+      });
 
     /* テスト用ユーザーデータ(admin => 1) */
     const testUserData = {

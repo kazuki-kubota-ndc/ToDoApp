@@ -9,6 +9,10 @@ import { createMemoryHistory } from 'history'
 beforeAll(() => {
     window.alert = jest.fn();
   });
+afterEach(() => {
+  /* fetchMockをリセット */
+  fetchMock.restore();
+});
 
 describe('メイン画面、初期表示処理のテスト', () => {
   test('メイン画面初期表示テスト', async () => {
@@ -64,7 +68,6 @@ describe('メイン画面、初期表示処理のテスト', () => {
     /* リストデータのリスト名が表示されているか確認 */
     expect(screen.getByText('first_list')).toBeInTheDocument();
     expect(screen.getByText('second_list')).toBeInTheDocument();
-    fetchMock.restore();
   });
 });
 describe('リスト追加処理のテスト', () => {
@@ -128,7 +131,6 @@ describe('リスト追加処理のテスト', () => {
     userEvent.click(screen.getByText('追加'));
     /* アラートの確認 */
     expect(window.alert).toHaveBeenCalledWith('リスト名が入力されていません');
-    fetchMock.restore();
   });
   test('リスト追加処理実行のテスト', async () => {
     const history = createMemoryHistory();
@@ -195,7 +197,6 @@ describe('リスト追加処理のテスト', () => {
     userEvent.click(screen.getByText('追加'));
     /* new_listが画面に表示されているのを確認 */
     expect(await screen.findByText('new_list')).toBeInTheDocument();
-    fetchMock.restore();
   });
 });
 describe('リスト編集処理のテスト', () => {
@@ -257,7 +258,6 @@ describe('リスト編集処理のテスト', () => {
     userEvent.click(screen.getByRole('second_list_edit_btn'));
     /* カラーが適応されているか確認する */
     expect(await screen.findByRole('new_color')).toHaveStyle({background: 'rgb(255, 255, 255)'});
-    fetchMock.restore();
   });
   test('リスト編集処理実行のテスト', async () => {
     const history = createMemoryHistory();
@@ -330,7 +330,6 @@ describe('リスト編集処理のテスト', () => {
 
     /* カラーが適応されているか確認する */
     expect(await screen.findByRole('edit_list_labelcolor')).toHaveStyle({background: 'rgb(238, 130, 238)'});
-    fetchMock.restore();
   });
 });
 describe('リスト削除処理のテスト', () => {
@@ -399,6 +398,5 @@ describe('リスト削除処理のテスト', () => {
     await new Promise((res) => setTimeout(res, 1000));
     /* リストが削除されているのを確認する */
     expect(await screen.queryByText('first_list')).toBeNull();
-    fetchMock.restore();
   });
 });

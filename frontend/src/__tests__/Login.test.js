@@ -10,14 +10,12 @@ import { createMemoryHistory } from 'history'
 beforeAll(() => {
   window.alert = jest.fn();
 });
+afterEach(() => {
+  /* fetchMockをリセット */
+  fetchMock.restore();
+});
 
 describe('ログイン実行時のテスト', () => {
-
-  afterEach(() => {
-    /* fetchMockをリセット */
-    fetchMock.restore();
-  });
-
   test('ユーザーIDが空の時のエラー表示テスト', async () => {
 
     /* ダミーで定義するだけ */
@@ -36,7 +34,7 @@ describe('ログイン実行時のテスト', () => {
     );
 
     /* inputのvalueを空に変更 */
-    await userEvent.type(screen.getByPlaceholderText('USER_ID'), '');
+    await userEvent.clear(screen.getByPlaceholderText('USER_ID'));
 
     /* ログイン処理実行 */
     await userEvent.click(screen.getByRole('button', {name: 'ログイン'}));
@@ -65,7 +63,7 @@ describe('ログイン実行時のテスト', () => {
 
     /* inputのvalueを空に変更 */
     await userEvent.type(screen.getByPlaceholderText('USER_ID'), 'test');
-    await userEvent.type(screen.getByPlaceholderText('PASSWORD'), '');
+    await userEvent.clear(screen.getByPlaceholderText('PASSWORD'));
 
     /* ログイン処理実行 */
     await userEvent.click(screen.getByRole('button', {name: 'ログイン'}));
@@ -107,7 +105,6 @@ describe('ログイン実行時のテスト', () => {
 
     /* アラートの確認 */
     await waitFor(() => expect(window.alert).toHaveBeenCalledWith('ユーザーID、パスワードが正しくありません。'));
-
   });
 
   test('ログイン実行、history.pushで/Mainが呼び出されるかの確認テスト', async () => {
@@ -152,7 +149,6 @@ describe('ログイン実行時のテスト', () => {
     await waitFor(() => 
       expect(history.location.pathname).toBe('/Main')
     );
-
   });
 });
 
@@ -204,7 +200,6 @@ describe('ログイン後の画面表示テスト', () => {
     );
     /* 'リスト一覧'の文字サイズ用のクラスがitleLargeになっているか確認 */
     expect(screen.getByText('リスト一覧')).toHaveClass('titleLarge');
-    fetchMock.restore();
   });
   test('ログイン後の文字サイズ適応を確認(中）', async () => {
     const history = createMemoryHistory();
@@ -252,7 +247,6 @@ describe('ログイン後の画面表示テスト', () => {
     );
     /* 'リスト一覧'の文字サイズ用のクラスがitleMedになっているか確認 */
     expect(screen.getByText('リスト一覧')).toHaveClass('titleMed');
-    fetchMock.restore();
   });
   test('ログイン後の文字サイズ適応を確認(小）', async () => {
     const history = createMemoryHistory();
@@ -300,7 +294,6 @@ describe('ログイン後の画面表示テスト', () => {
     );
     /* 'リスト一覧'の文字サイズ用のクラスがitleSmallになっているか確認 */
     expect(screen.getByText('リスト一覧')).toHaveClass('titleSmall');
-    fetchMock.restore();
   }); 
 });
 describe('メニューの表示確認', () => {
@@ -356,7 +349,6 @@ describe('メニューの表示確認', () => {
     expect(await screen.findByText(/アカウント情報/)).toBeInTheDocument();
     expect(await screen.findByText(/ログアウト/)).toBeInTheDocument();
     expect(await screen.findByText(/ユーザー管理/)).toBeInTheDocument();
-    fetchMock.restore();
   });
   test('一般ユーザー権限でのメニュー表示テスト', async () => {
     const history = createMemoryHistory();
@@ -410,7 +402,6 @@ describe('メニューの表示確認', () => {
     expect(await screen.findByText(/アカウント情報/)).toBeInTheDocument();
     expect(await screen.findByText(/ログアウト/)).toBeInTheDocument();
     expect(await screen.queryByText(/ユーザー管理/)).toBeNull();
-    fetchMock.restore();
   });
 });
 describe('ログアウト実行時のテスト', () => {
@@ -467,6 +458,5 @@ describe('ログアウト実行時のテスト', () => {
     await waitFor(() => 
       expect(history.location.pathname).toBe('/')
     );
-    fetchMock.restore();
   });
 });
