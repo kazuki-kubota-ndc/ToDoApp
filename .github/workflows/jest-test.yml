@@ -1,40 +1,44 @@
-# This is a basic workflow to help you get started with Actions
-
+# ワークフロー名(任意)
 name: jestTest
 
-# Controls when the workflow will run
+# トリガーとなる GitHub イベント
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
+  # 対象ファイル(frontend/src/**)がpush時に起動
   push:
     paths:
       - "frontend/src/**"
 
-  # Allows you to run this workflow manually from the Actions tab
+  # workflow_dispatchを指定しておくとGitHubのコンソールから実行可能になる
   workflow_dispatch:
 
+# 使用するシェルと実行するディレクトリを指定
 defaults:
   run:
     shell: bash
     working-directory: frontend
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+# ワークフローの実行処理
 jobs:
-  # This workflow contains a single job called "test"
+  # ジョブ名(任意)
   test:
-    # The type of runner that the job will run on
+    # ジョブが実行されるランナー(仮想デバイス)の種類
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    # ジョブのステップ
     steps:
+      # チェックアウト
       - uses: actions/checkout@v3
 
+      # Nodeをセットアップ
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
           node-version: "16"
     
+      # npmをインストール
       - name: npmInstall
         run: npm install
-    
+
+      # npm testを実行    
       - name: jestTest
         run: npm test
