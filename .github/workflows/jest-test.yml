@@ -5,11 +5,16 @@ name: jestTest
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
-  push:
-    branches: [ "main" ]
+  paths:
+    - "frontend/src/**"
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+    working-directory: frontend
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -20,6 +25,15 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
+      - uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+
+      - name: Install dependencies
+        run: npm
+    
+      - name: jestTest
         run: npm test
