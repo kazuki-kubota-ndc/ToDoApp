@@ -157,5 +157,6 @@ describe('新規登録実行時のテスト', () => {
     await waitFor(() => 
       expect(history.location.pathname).toBe('/Main')
     );
+    
   });
 });
