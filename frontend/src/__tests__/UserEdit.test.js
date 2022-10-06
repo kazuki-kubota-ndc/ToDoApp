@@ -178,7 +178,7 @@ describe('ユーザー管理画面、ユーザー追加処理のテスト', () =
 
     /* 追加したユーザーIDとユーザー名が表示されているか確認 */
     expect(await screen.findByText('USERID')).toBeInTheDocument();
-    expect(await screen.findByText('NAME')).toBeInTheDocument();
+    expect(await screen.findByText('NEW_NAME')).toBeInTheDocument();
   });
 });
 describe('ユーザー管理画面、ユーザー編集処理のテスト', () => {
