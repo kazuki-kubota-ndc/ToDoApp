@@ -177,8 +177,8 @@ describe('ユーザー管理画面、ユーザー追加処理のテスト', () =
     userEvent.click(screen.getByRole('button', { name: '追加'}));
 
     /* 追加したユーザーIDとユーザー名が表示されているか確認 */
-    expect(await screen.findByText('NEW_USERID')).toBeInTheDocument();
-    expect(await screen.findByText('NEW_NAME')).toBeInTheDocument();
+    expect(await screen.findByText('USERID')).toBeInTheDocument();
+    expect(await screen.findByText('NAME')).toBeInTheDocument();
   });
 });
 describe('ユーザー管理画面、ユーザー編集処理のテスト', () => {
