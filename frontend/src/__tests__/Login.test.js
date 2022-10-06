@@ -198,7 +198,7 @@ describe('ログイン後の画面表示テスト', () => {
         />
       </Router>
     );
-    /* 'リスト一覧'の文字サイズ用のクラスがitleLargeになっているか確認 */
+    /* 'リスト一覧'の文字サイズ用のクラスがtitleLargeになっているか確認 */
     expect(screen.getByText('リスト一覧')).toHaveClass('titleLarge');
   });
   test('ログイン後の文字サイズ適応を確認(中）', async () => {
@@ -245,7 +245,7 @@ describe('ログイン後の画面表示テスト', () => {
         />
       </Router>
     );
-    /* 'リスト一覧'の文字サイズ用のクラスがitleMedになっているか確認 */
+    /* 'リスト一覧'の文字サイズ用のクラスがtitleMedになっているか確認 */
     expect(screen.getByText('リスト一覧')).toHaveClass('titleMed');
   });
   test('ログイン後の文字サイズ適応を確認(小）', async () => {
@@ -292,7 +292,7 @@ describe('ログイン後の画面表示テスト', () => {
         />
       </Router>
     );
-    /* 'リスト一覧'の文字サイズ用のクラスがitleSmallになっているか確認 */
+    /* 'リスト一覧'の文字サイズ用のクラスがtitleSmallになっているか確認 */
     expect(screen.getByText('リスト一覧')).toHaveClass('titleSmall');
   }); 
 });

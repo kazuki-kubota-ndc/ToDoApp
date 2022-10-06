@@ -62,11 +62,11 @@ const AddUserModal = ({showModal, modalOpen, modalClose, modalData, setModalData
   /* 追加ボタン実行 */
   const onClickAddUser = () => {
     if(!addUserData.login_id) {
-      alert("ユーザーIDを入力して下さい。");
+      alert("ユーザーIDが入力されていません");
     }else if(!addUserData.user_name) {
-      alert("ユーザー名を入力して下さい。");
+      alert("ユーザー名が入力されていません");
     }else if(!addUserData.pass) {
-      alert("パスワードを入力して下さい。");
+      alert("パスワードが入力されていません");
     }else {
 
       /* 新規作成時、権限は「ユーザー」固定 */
