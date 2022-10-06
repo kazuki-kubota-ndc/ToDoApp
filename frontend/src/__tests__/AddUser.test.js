@@ -158,4 +158,5 @@ describe('新規登録実行時のテスト', () => {
       expect(history.location.pathname).toBe('/Main')
     );    
   });
+  
 });
