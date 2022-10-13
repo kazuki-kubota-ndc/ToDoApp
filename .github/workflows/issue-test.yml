@@ -3,6 +3,9 @@ name: issueTest
 
 # トリガーとなる GitHub イベント
 on:
+  # 時間指定で実行(日本標準時間は+9時間)
+  schedule:
+    - cron: '0 7 * * *'
   # workflow_dispatchを指定しておくとGitHubのコンソールから実行可能になる
   workflow_dispatch:
 
@@ -23,19 +26,6 @@ jobs:
 
     # ジョブのステップ
     steps:
-      # チェックアウト
-      - uses: actions/checkout@v3
-
-      # Nodeをセットアップ
-      - name: Set up Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: "16"
-    
-      # npmをインストール
-      - name: npmInstall
-        run: npm install
-
       # npm testを実行    
-      - name: jestTest
-        run: npm test
+      - name: cronTest
+        run: echo 'cron-test'
