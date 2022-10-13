@@ -31,9 +31,9 @@ jobs:
 
       # issue作成    
       - name: Create a new issue
-        run: hub issue create \
-             -l bot \
-             -a ${{ github.repository_owner }} \
+        run: hub issue create 
+             -l bot 
+             -a ${{ github.repository_owner }} 
              -m '[BOT] test issue created!'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
