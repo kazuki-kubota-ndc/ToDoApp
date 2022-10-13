@@ -26,7 +26,6 @@ jobs:
 
     # ジョブのステップ
     steps:
-      # issue    
       - name: Create a new issue
         run: hub issue create \
             -l bot \                             # ラベル
