@@ -26,8 +26,9 @@ jobs:
 
     # ジョブのステップ
     steps:
+      # issue作成    
       - name: Create a new issue
-run: echo 'test'
+        run: echo 'issue-test'
 #        run: hub issue create \
 #            -l bot \                             # ラベル
 #            -a ${{ github.repository_owner }} \  # アサインユーザ
