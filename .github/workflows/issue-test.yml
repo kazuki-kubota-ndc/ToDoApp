@@ -3,10 +3,6 @@ name: issueTest
 
 # トリガーとなる GitHub イベント
 on:
-  # 時間指定で実行(日本標準時間は+9時間)
-  schedule:
-    - cron: '0 7 * * *'
-
   # workflow_dispatchを指定しておくとGitHubのコンソールから実行可能になる
   workflow_dispatch:
 
@@ -19,8 +15,7 @@ defaults:
 # ワークフローの実行処理
 jobs:
   # ジョブ名(任意)
-  create_isuue:
-    name: reminder
+  test:
     # ジョブが実行されるランナー(仮想デバイス)の種類
     runs-on: ubuntu-latest
     # タイムアウトの時間を設定しておく
@@ -28,11 +23,19 @@ jobs:
 
     # ジョブのステップ
     steps:
-      - name: Create a new issue
-#        run: hub issue create \
-#            -l bot \                             # ラベル
-#            -a ${{ github.repository_owner }} \  # アサインユーザ
-#            -m '[BOT] test issue created!'       # タイトル
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-- run: echo "issue-test"
+      # チェックアウト
+      - uses: actions/checkout@v3
+
+      # Nodeをセットアップ
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+    
+      # npmをインストール
+      - name: npmInstall
+        run: npm install
+
+      # npm testを実行    
+      - name: jestTest
+        run: npm test
