@@ -37,3 +37,4 @@ jobs:
              -m '[BOT] test issue created!'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_EDITER: ${{ secrets.GIT_EDITER }}
