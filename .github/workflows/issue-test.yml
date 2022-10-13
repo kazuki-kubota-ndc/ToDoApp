@@ -3,7 +3,7 @@ name: issueTest
 
 # トリガーとなる GitHub イベント
 on:
-  # 
+  # 時間指定で実行(6+9=17時40分)
   schedule:
     - cron: '40 6 * * *'
 
@@ -13,7 +13,8 @@ on:
 # ワークフローの実行処理
 jobs:
   # ジョブ名(任意)
-  test:
+  create_isuue:
+    name: reminder
     # ジョブが実行されるランナー(仮想デバイス)の種類
     runs-on: ubuntu-latest
     # タイムアウトの時間を設定しておく
