@@ -35,4 +35,4 @@ jobs:
 #            -m '[BOT] test issue created!'       # タイトル
 #        env:
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-- run: echo 'issue-test'
+- run: echo "issue-test"
