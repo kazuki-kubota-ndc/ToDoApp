@@ -1,0 +1,30 @@
+# ワークフロー名(任意)
+name: issueTest
+
+# トリガーとなる GitHub イベント
+on:
+  # 
+  schedule:
+    - cron: '40 6 * * *'
+
+  # workflow_dispatchを指定しておくとGitHubのコンソールから実行可能になる
+  workflow_dispatch:
+
+# ワークフローの実行処理
+jobs:
+  # ジョブ名(任意)
+  test:
+    # ジョブが実行されるランナー(仮想デバイス)の種類
+    runs-on: ubuntu-latest
+    # タイムアウトの時間を設定しておく
+    timeout-minut: 10
+
+    # ジョブのステップ
+    steps:
+      - name: Create a new issue
+        run: hub issue create \
+            -l bot \                             # ラベル
+            -a ${{ github.repository_owner }} \  # アサインユーザ
+            -m '[BOT] test issue created!'       # タイトル
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
