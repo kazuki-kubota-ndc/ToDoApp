@@ -26,6 +26,9 @@ jobs:
 
     # ジョブのステップ
     steps:
+      # チェックアウト
+      - uses: actions/checkout@v3
+
       # issue作成    
       - name: Create a new issue
         run: hub issue create \
