@@ -10,6 +10,12 @@ on:
   # workflow_dispatchを指定しておくとGitHubのコンソールから実行可能になる
   workflow_dispatch:
 
+# 使用するシェルと実行するディレクトリを指定
+defaults:
+  run:
+    shell: bash
+    working-directory: frontend
+
 # ワークフローの実行処理
 jobs:
   # ジョブ名(任意)
