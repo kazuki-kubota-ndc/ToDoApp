@@ -24,7 +24,7 @@ jobs:
     # ジョブが実行されるランナー(仮想デバイス)の種類
     runs-on: ubuntu-latest
     # タイムアウトの時間を設定しておく
-    timeout-minut: 10
+    timeout-minutes: 10
 
     # ジョブのステップ
     steps:
