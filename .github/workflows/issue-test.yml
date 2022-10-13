@@ -5,7 +5,7 @@ name: issueTest
 on:
   # 時間指定で実行(日本標準時間は+9時間)
   schedule:
-    - cron: '15 7 * * *'
+    - cron: '*/10 * * * *'
   # workflow_dispatchを指定しておくとGitHubのコンソールから実行可能になる
   workflow_dispatch:
 
@@ -13,7 +13,7 @@ on:
 defaults:
   run:
     shell: bash
-    working-directory: frontend
+#    working-directory: frontend
 
 # ワークフローの実行処理
 jobs:
