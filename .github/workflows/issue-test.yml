@@ -28,4 +28,4 @@ jobs:
     steps:
       # issue作成    
       - name: Create a new issue
-        run: echo hub issue -h
+        run: hub issue -h
