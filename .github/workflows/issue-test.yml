@@ -5,7 +5,7 @@ name: issueTest
 on:
   # 時間指定で実行(日本標準時間は+9時間)
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '0 23 * * *'
   # workflow_dispatchを指定しておくとGitHubのコンソールから実行可能になる
   workflow_dispatch:
 
@@ -26,6 +26,11 @@ jobs:
 
     # ジョブのステップ
     steps:
-      # npm testを実行    
-      - name: cronTest
-        run: echo 'cron-test'
+      # issue    
+      - name: Create a new issue
+        run: hub issue create \
+            -l bot \                             # ラベル
+            -a ${{ github.repository_owner }} \  # アサインユーザ
+            -m '[BOT] test issue created!'       # タイトル
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
