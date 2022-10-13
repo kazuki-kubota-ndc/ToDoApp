@@ -28,4 +28,9 @@ jobs:
     steps:
       # issue作成    
       - name: Create a new issue
-        run: hub issue -h
+        run: hub issue \
+             -l bot \
+             -a ${{ github.repository_owner }} \
+             -m '[BOT] test issue created!'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
