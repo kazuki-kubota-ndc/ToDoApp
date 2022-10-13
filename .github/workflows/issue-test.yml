@@ -27,9 +27,10 @@ jobs:
     # ジョブのステップ
     steps:
       - name: Create a new issue
-        run: hub issue create \
-            -l bot \                             # ラベル
-            -a ${{ github.repository_owner }} \  # アサインユーザ
-            -m '[BOT] test issue created!'       # タイトル
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+run: echo 'test'
+#        run: hub issue create \
+#            -l bot \                             # ラベル
+#            -a ${{ github.repository_owner }} \  # アサインユーザ
+#            -m '[BOT] test issue created!'       # タイトル
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
