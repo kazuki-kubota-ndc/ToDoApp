@@ -4,9 +4,9 @@ name: jestTest
 # トリガーとなる GitHub イベント
 on:
   # 対象ファイル(frontend/src/**)がpush時に起動
-  push:
-    paths:
-      - "frontend/src/**"
+#  push:
+#    paths:
+#      - "frontend/src/**"
 
   # workflow_dispatchを指定しておくとGitHubのコンソールから実行可能になる
   workflow_dispatch:
