@@ -4,8 +4,8 @@ name: issueTest
 # トリガーとなる GitHub イベント
 on:
   # 時間指定で実行(日本標準時間は+9時間)
-  schedule:
-    - cron: '0 23 * * *'
+#  schedule:
+#    - cron: '0 23 * * *'
   # workflow_dispatchを指定しておくとGitHubのコンソールから実行可能になる
   workflow_dispatch:
 
@@ -31,10 +31,14 @@ jobs:
 
       # issue作成    
       - name: Create a new issue
-        run: hub issue create 
+        run: hub issue create
+             # ラベル設定 
              -l bot 
+             # Assignee(担当者)を設定
              -a ${{ github.repository_owner }} 
+             # タイトル
              -m '[BOT] test issue created!'
+        # 環境変数設定
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GIT_EDITOR: ${{ secrets.GIT_EDITOR }}
