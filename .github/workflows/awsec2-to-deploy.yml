@@ -42,6 +42,10 @@ jobs:
          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
          aws-region: ap-northeast-3
 
+     # gitをインストール
+     - name: gitInstall
+       run: git install
+
      # デプロイする
      - name: Deploy
        run: |
