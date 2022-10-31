@@ -33,6 +33,6 @@ jobs:
          # SSH接続して、git pullする
          echo "${{ secrets.ONPLACE_GIT_PRIVATE_KEY }}" > private_key
          chmod 600 private_key
-         ssh -oStrictHostKeyChecking=no ${{ secrets.ONPLACE_USER_NAME }}@${{ secrets.ONPLACE_HOST_NAME }} -i private_key "cd React && git pull origin main"
+         ssh -oStrictHostKeyChecking=no ${{ secrets.ONPLACE_USER_NAME }}@${{ secrets.ONPLACE_HOST_NAME }} -i private_key -p 220001 "cd React && git pull origin main"
          # 処理を実行
          
