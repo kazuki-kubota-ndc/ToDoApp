@@ -1,0 +1,38 @@
+# ワークフロー名(任意)
+name: onplace
+
+# トリガーとなる GitHub イベント
+on:
+  # workflow_dispatchを指定しておくとGitHubのコンソールから実行可能になる
+  workflow_dispatch:
+
+# ワークフローの実行処理
+jobs:
+  # ジョブ名(任意)
+  build:
+    # ジョブが実行されるランナー(仮想デバイス)の種類
+    runs-on: ubuntu-latest
+    # タイムアウトの時間を設定しておく
+    timeout-minutes: 10
+
+    # ジョブのステップ
+    steps:
+     # IP取得ライブラリをインストール
+     - name: Public IP Install
+       id: ip
+       uses: haythem/public-ip@v1.2
+
+     # BranchをCheckout
+     - name: Checkout
+       uses: actions/checkout@v2
+
+     # デプロイする
+     - name: Deploy
+       run: |
+
+         # SSH接続して、git pullする
+         echo "${{ secrets.ONPLACE_GIT_PRIVATE_KEY }}" > private_key
+         chmod 600 private_key
+         ssh -oStrictHostKeyChecking=no ${{ secrets.ONPLACE_USER_NAME }}@${{ secrets.ONPLACE_HOST_NAME }} -i private_key "cd React && git pull origin main"
+         # 処理を実行
+         
